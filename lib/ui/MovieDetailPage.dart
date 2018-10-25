@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'dart:convert';
 import 'package:flutter_movie/model/MovieDetail.dart';
+import 'package:flutter_movie/ui/MovieDetailHeader.dart';
 
 class MovieDetailPage extends StatefulWidget {
   final String MOVIE_DETAIL_API =
@@ -36,13 +37,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Center(
-        child: new RaisedButton(
-          child:
-              new Text(movieDetail == null ? "Movie Name" : movieDetail.name),
-          onPressed: _getMovieDetail,
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            MovieDetailHeader(movieDetail)
+          ],
         ),
-      ),
+      )
     );
   }
 }
