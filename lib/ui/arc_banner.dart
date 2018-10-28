@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class ArcBanner extends StatelessWidget {
   final String bannerImage;
@@ -10,21 +11,13 @@ class ArcBanner extends StatelessWidget {
     var screenWidth = MediaQuery.of(context).size.width;
 
     return ClipPath(
-      clipper: new ArcClipper(),
-      child: bannerImage == null
-          ? Image.asset(
-              "assets/banner.png",
-              width: screenWidth,
-              height: 230.0,
-              fit: BoxFit.cover,
-            )
-          : Image.network(
-              bannerImage,
-              width: screenWidth,
-              height: 230.0,
-              fit: BoxFit.cover,
-            ),
-    );
+        clipper: new ArcClipper(),
+        child: FadeInImage.memoryNetwork(
+            placeholder: kTransparentImage,
+            image: bannerImage,
+            width: screenWidth,
+            height: 230.0,
+            fit: BoxFit.cover));
   }
 }
 

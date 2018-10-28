@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class Poster extends StatelessWidget {
   static const RATIO = 0.7;
@@ -10,10 +11,11 @@ class Poster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        elevation: 3.0,
-        child: Image.network(
-            posterUrl,
+    return new ClipRRect(
+        borderRadius: new BorderRadius.circular(4.0),
+        child: new FadeInImage.memoryNetwork(
+            placeholder: kTransparentImage,
+            image: posterUrl,
             width: RATIO * posterHeight,
             height: posterHeight,
             fit: BoxFit.cover));
