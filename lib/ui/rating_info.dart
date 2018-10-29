@@ -44,7 +44,7 @@ class RatingInfo extends StatelessWidget {
       0分是Disaster，灾难
    */
 
-  String _getRatingText(double ratingNum) {
+  String _getRatingText(num ratingNum) {
     String ratingText;
     if (ratingNum >= 9.5) {
       ratingText = "Masterpiece";
@@ -76,7 +76,7 @@ class RatingInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         new Text(
-          movieDetail.overallRating.toString(),
+          (movieDetail.overallRating * 1.0).toString(),
           style: TextStyle(
               color: Colors.redAccent,
               fontWeight: FontWeight.w600,

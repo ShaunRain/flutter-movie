@@ -6,7 +6,7 @@ class MovieDetail {
   Object quizGame;
   int hotRanking;
   int movieId;
-  double overallRating;
+  num overallRating;
   int personCount;
   int showCinemaCount;
   int showDay;

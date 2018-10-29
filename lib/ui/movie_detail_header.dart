@@ -11,16 +11,19 @@ class MovieDetailHeader extends StatelessWidget {
   MovieDetailHeader(this.movieDetail);
 
   Widget _buildTypeChips(TextTheme textTheme) {
-    return Row(
-        children: movieDetail.type
-            .map((type) => Padding(
-                  padding: const EdgeInsets.only(right: 12.0),
-                  child: Chip(
-                      label: Text(type),
-                      labelStyle: textTheme.caption,
-                      backgroundColor: Colors.black12),
-                ))
-            .toList());
+    return new SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+          children: movieDetail.type
+              .map((type) => Padding(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    child: Chip(
+                        label: Text(type),
+                        labelStyle: textTheme.caption,
+                        backgroundColor: Colors.black12),
+                  ))
+              .toList()),
+    );
   }
 
   @override
@@ -51,7 +54,8 @@ class MovieDetailHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
-              Poster(movieDetail.img, 180.0),
+              SizedBox(width: 126.0),
+//              Poster(movieDetail.img, 180.0, 126.0, movieDetail.movieId),
               SizedBox(width: 16.0),
               Expanded(child: movieInfo)
             ],

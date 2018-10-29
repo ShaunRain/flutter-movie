@@ -13,6 +13,7 @@ class ArcBanner extends StatelessWidget {
     return ClipPath(
         clipper: new ArcClipper(),
         child: FadeInImage.memoryNetwork(
+            fadeInDuration: Duration(milliseconds: 500),
             placeholder: kTransparentImage,
             image: bannerImage,
             width: screenWidth,
