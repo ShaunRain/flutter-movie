@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_movie/model/movie_info.dart';
+import 'package:flutter_movie/ui/GradientAppBar.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 
@@ -36,6 +37,7 @@ class _MovieHomePageState extends State<MovieHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
+            GradientAppBar('Movies'),
             movieInfos != null
                 ? new MovieHorizontalScroller(movieInfos)
                 : SizedBox()

@@ -36,7 +36,7 @@ class _PosterState extends State<Poster> {
         child: new ClipRRect(
             borderRadius: new BorderRadius.circular(4.0),
             child: new FadeInImage.memoryNetwork(
-                fadeInDuration: Duration(seconds: 1),
+                fadeInDuration: Duration(milliseconds: 500),
                 placeholder: kTransparentImage,
                 image: widget.posterUrl,
                 width: widget.posterWidth,

@@ -61,13 +61,13 @@ class MovieHorizontalScroller extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: Text('Popular',
                 style: textTheme.subhead.copyWith(fontSize: 18.0))),
         new Container(
           height: 300.0,
           child: new ListView.builder(
-              padding: const EdgeInsets.only(top: 10.0, left: 20.0),
+              padding: const EdgeInsets.only(left: 20.0),
               scrollDirection: Axis.horizontal,
               itemCount: movieInfos.length,
               itemBuilder: (context, index) => _buildMovieItem(context, index)),

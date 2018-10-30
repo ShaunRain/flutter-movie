@@ -49,6 +49,21 @@ flutter:
   assets:
       - assets/banner.png
       - assets/poster.png
+      - assets/img1.jpg
+      - assets/img2.jpg
+      - assets/img3.jpg
+      - assets/img4.jpg
+      - assets/img5.jpg
+      - assets/img6.jpg
+      - assets/img7.jpg
+
+  fonts:
+      - family: Poppins
+        fonts:
+          - asset: assets/Poppins-SemiBold.ttf
+            weight: 600
+          - asset: assets/Poppins-Regular.ttf
+            weight: 400
 
   #  - images/a_dot_ham.jpeg
 

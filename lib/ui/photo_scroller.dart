@@ -12,7 +12,7 @@ class PhotoScroller extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(4.0),
           child: FadeInImage.memoryNetwork(
-              fadeInDuration: Duration(milliseconds: 200),
+              fadeInDuration: Duration(milliseconds: 500),
               placeholder: kTransparentImage,
               image: photo,
               width: 160.0,
