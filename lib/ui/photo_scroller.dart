@@ -1,25 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/ui/parallax/parallax_image.dart';
 import 'package:transparent_image/transparent_image.dart';
+//import 'package:image/image.dart';
 
 class PhotoScroller extends StatelessWidget {
   final List<String> photoUrls;
 
   PhotoScroller(this.photoUrls);
 
-  Widget _buildPhoto(String photo) {
-    return Padding(
-        padding: const EdgeInsets.only(right: 14.0),
-        child: ClipRRect(
+  Widget _buildHorizontalChild(BuildContext context, int index) {
+    return new Padding(
+      padding: const EdgeInsets.only(right: 10.0),
+      child: ClipRRect(
           borderRadius: BorderRadius.circular(4.0),
-          child: FadeInImage.memoryNetwork(
-              fadeInDuration: Duration(milliseconds: 500),
-              placeholder: kTransparentImage,
-              image: photo,
-              width: 160.0,
-              height: 120.0,
-              fit: BoxFit.cover),
-        ));
+          child: new ParallaxImage(
+              extent: 160.0,
+              image: Image.network(photoUrls[index],
+                      width: 160.0, height: 120.0, fit: BoxFit.cover)
+                  .image)),
+    );
   }
+
+//  Widget _buildPhoto(String photo) {
+//    return Padding(
+//        padding: const EdgeInsets.only(right: 14.0),
+//        child: ClipRRect(
+//          borderRadius: BorderRadius.circular(4.0),
+//          child: FadeInImage.memoryNetwork(
+//              fadeInDuration: Duration(milliseconds: 500),
+//              placeholder: kTransparentImage,
+//              image: photo,
+//              width: 160.0,
+//              height: 120.0,
+//              fit: BoxFit.cover),
+//        ));
+//  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +55,8 @@ class PhotoScroller extends StatelessWidget {
           child: new ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(top: 8.0, left: 20.0),
-            itemBuilder: (context, index) => _buildPhoto(photoUrls[index]),
+            itemBuilder: (context, index) =>
+                _buildHorizontalChild(context, index),
             itemCount: photoUrls.length,
           ),
         )
