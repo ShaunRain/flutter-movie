@@ -21,9 +21,11 @@ class MovieHorizontalScroller extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               InkWell(
-                onTap: () => Navigator.of(context).push(new PageRouteBuilder(
-                    pageBuilder: (_, __, ___) =>
-                        new MovieDetailPage(info.movieId, poster))),
+                onTap: () => Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) =>
+                            new MovieDetailPage(info.movieId, poster))),
                 child: poster,
               ),
               SizedBox(height: 6.0),
@@ -61,7 +63,8 @@ class MovieHorizontalScroller extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12.0),
             child: Text('Popular',
                 style: textTheme.subhead.copyWith(fontSize: 18.0))),
         new Container(

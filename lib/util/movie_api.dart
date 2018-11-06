@@ -5,4 +5,7 @@ class MovieApi {
   static final String MOVIE_POPULAR_API =
       "https://api-m.mtime.cn/PageSubArea/HotPlayMovies.api?locationId=974";
 
+  static final String ACTOR_DETAIL_API =
+      "https://ticket-api-m.mtime.cn/person/detail.api";
+
 }
