@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_movie/model/movie_info.dart';
 import 'package:flutter_movie/model/subject.dart';
+import 'package:flutter_movie/page/video_app.dart';
 import 'package:flutter_movie/ui/GradientAppBar.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/ui/parallax/parallax_image.dart';
@@ -54,7 +54,7 @@ class _MovieHomePageState extends State<MovieHomePage> {
           children: <Widget>[
             GradientAppBar('Movies'),
             movieInfos != null
-                ? new MovieHorizontalScroller(movieInfos, "正在热映")
+                ? new MovieHorizontalScroller(movieInfos, title: "正在热映")
                 : SizedBox(),
 //            ParallexPageView(list),
             new Container(
@@ -75,9 +75,12 @@ class _MovieHomePageState extends State<MovieHomePage> {
     if (index > 7) return null;
     return new Padding(
         padding: const EdgeInsets.only(right: 10.0),
-        child: new ParallaxImage(
-          extent: 100.0,
-          image: new ExactAssetImage('assets/img$index.jpg'),
-        ));
+        child: new GestureDetector(
+            onTap: () => Navigator.push(context,
+                new MaterialPageRoute(builder: (context) => new VideoApp())),
+            child: ParallaxImage(
+              extent: 100.0,
+              image: new ExactAssetImage('assets/img$index.jpg'),
+            )));
   }
 }

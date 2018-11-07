@@ -62,7 +62,9 @@ class RatingInfo extends StatelessWidget {
       ratingText = "Bad";
     } else if (ratingNum >= 3.0) {
       ratingText = "Awful";
-    } else {
+    } else if(ratingNum <= 0){
+      ratingText = "None";
+    }else {
       ratingText = "Disaster";
     }
 

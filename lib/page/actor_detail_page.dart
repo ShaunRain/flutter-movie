@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/actor_detail.dart';
 import 'package:flutter_movie/model/subject.dart';
+import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui' as ui;
@@ -53,11 +54,24 @@ class _ActorDetailPage extends State<ActorDetailPage> {
     actorWorks = response.data['works']
         .map((json) => Subject.fromJson(json['subject']))
         .toList()
-        .cast<Subject>();
-
-    print(actorWorks);
+        .cast<Subject>()
+        .where((subject) => int.parse(subject.year) <= 2018)
+        .toList();
 
     setState(() {});
+  }
+
+  Widget _buildWorks() {
+    if (actorWorks == null) {
+      return SizedBox();
+    }
+
+    return new MovieHorizontalScroller(
+      actorWorks,
+      title: "代表作品",
+      ratio: 0.7,
+      textColor: Colors.white,
+    );
   }
 
   @override
@@ -91,7 +105,7 @@ class _ActorDetailPage extends State<ActorDetailPage> {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[_buildAvatar(), _buildInfo()],
+        children: <Widget>[_buildAvatar(), _buildInfo(), _buildWorks()],
       ),
     );
   }

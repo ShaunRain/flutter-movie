@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/movie_detail.dart';
 import 'package:flutter_movie/ui/arc_banner.dart';
-import 'package:flutter_movie/ui/expansion_text.dart';
-import 'package:flutter_movie/ui/poster.dart';
 import 'package:flutter_movie/ui/rating_info.dart';
 
 class MovieDetailHeader extends StatelessWidget {
@@ -45,7 +43,11 @@ class MovieDetailHeader extends StatelessWidget {
       children: <Widget>[
         Padding(
             padding: const EdgeInsets.only(bottom: 140.0),
-            child: new ArcBanner(movieDetail.photos[0].image)),
+            child: new ArcBanner(
+              bannerImage: movieDetail.photos[0].image,
+              videoUrl: movieDetail.trailer_urls[0],
+              videoTitle: "${movieDetail.title}(预告片)",
+            )),
         Positioned(
           bottom: 0.0,
           left: 16.0,

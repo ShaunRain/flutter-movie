@@ -38,6 +38,10 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     setState(() {});
   }
 
+  void updateState(f) {
+    setState(f);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(

@@ -1,24 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/ui/video_card.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:video_player/video_player.dart';
 
-class ArcBanner extends StatelessWidget {
-  final String bannerImage;
+class ArcBanner extends StatefulWidget {
+  String bannerImage;
+  String videoUrl;
+  String videoTitle;
 
-  ArcBanner(this.bannerImage);
+  ArcBanner({this.bannerImage, this.videoUrl, this.videoTitle});
+
+  @override
+  _ArcBannerState createState() => _ArcBannerState();
+}
+
+class _ArcBannerState extends State<ArcBanner> {
+  VideoPlayerController _controller;
+
+  void _initVideo() async {
+    _controller = VideoPlayerController.network(widget.videoUrl)
+      ..setLooping(true)
+      ..setVolume(0.0)
+      ..play();
+
+    await _controller.initialize();
+  }
+
+  @override
+  void initState() {
+    if (widget.videoUrl != null) {
+      _initVideo();
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
 
-    return ClipPath(
-        clipper: new ArcClipper(),
-        child: FadeInImage.memoryNetwork(
-            fadeInDuration: Duration(milliseconds: 500),
-            placeholder: kTransparentImage,
-            image: bannerImage,
-            width: screenWidth,
-            height: 230.0,
-            fit: BoxFit.cover));
+    return Stack(
+      children: <Widget>[
+        ClipPath(
+            clipper: new ArcClipper(),
+            child: widget.videoUrl != null
+                ? VideoCard(
+                    aspectRatio: screenWidth / 230.0,
+                    title: widget.videoTitle,
+                    controller: _controller)
+                : FadeInImage.memoryNetwork(
+                    fadeInDuration: Duration(milliseconds: 500),
+                    placeholder: kTransparentImage,
+                    image: widget.bannerImage,
+                    width: screenWidth,
+                    height: 230.0,
+                    fit: BoxFit.cover))
+      ],
+    );
   }
 }
 
