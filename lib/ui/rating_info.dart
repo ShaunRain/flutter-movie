@@ -11,9 +11,9 @@ class RatingInfo extends StatelessWidget {
 
     for (var i = 1; i <= 5; i++) {
       IconData iconData;
-      if (i > movieDetail.overallRating / 2) {
+      if (i > movieDetail.rating.average/ 2) {
         iconData = Icons.star_border;
-        if (i - 0.5 <= movieDetail.overallRating / 2) {
+        if (i - 0.5 <= movieDetail.rating.average / 2) {
           iconData = Icons.star_half;
         }
       } else {
@@ -51,7 +51,7 @@ class RatingInfo extends StatelessWidget {
     } else if (ratingNum >= 9.0) {
       ratingText = "Amazing";
     } else if (ratingNum >= 8.0) {
-      ratingText = "Greate";
+      ratingText = "Great";
     } else if (ratingNum >= 7.0) {
       ratingText = "Good";
     } else if (ratingNum >= 6.0) {
@@ -76,7 +76,7 @@ class RatingInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         new Text(
-          (movieDetail.overallRating * 1.0).toString(),
+          (movieDetail.rating.average * 1.0).toString(),
           style: TextStyle(
               color: Colors.redAccent,
               fontWeight: FontWeight.w600,
@@ -96,7 +96,7 @@ class RatingInfo extends StatelessWidget {
         _buildStars(),
         Padding(
           padding: const EdgeInsets.only(top: 4.0, left: 4.0),
-          child: Text(_getRatingText(movieDetail.overallRating),
+          child: Text(_getRatingText(movieDetail.rating.average),
               style: TextStyle(
                   color: Colors.black45, fontWeight: FontWeight.w200)),
         ),

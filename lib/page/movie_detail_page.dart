@@ -9,7 +9,7 @@ import 'package:flutter_movie/ui/poster.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 
 class MovieDetailPage extends StatefulWidget {
-  int movieId;
+  String movieId;
   Poster poster;
 
   MovieDetailPage(this.movieId, this.poster);
@@ -29,12 +29,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
 
   _getMovieDetail() async {
     Dio dio = new Dio();
-    Response response = await dio.get(MovieApi.MOVIE_DETAIL_API +
-        "?locationId=974&movieId=" +
-        widget.movieId.toString());
+    Response response = await dio.get(
+        "${MovieApi.MOVIE_DETAIL_API}${widget.movieId}?apikey=${MovieApi.DOUBAN_API_KEY}"
+        "&city=杭州&client=something&udid=dddddddddddddddddddddd");
 
-//    print(response.data['data']['basic']);
-    movieDetail = MovieDetail.fromJson(response.data['data']['basic']);
+    movieDetail = MovieDetail.fromJson(response.data);
 
     setState(() {});
   }
@@ -60,13 +59,13 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: ExpansionText(movieDetail.story),
+                      child: ExpansionText(movieDetail.summary),
                     ),
-                    PhotoScroller(movieDetail.stageImg.list
-                        .map((img) => img.imgUrl)
+                    PhotoScroller(movieDetail.photos
+                        .map((photo) => photo.thumb)
                         .toList()),
                     SizedBox(height: 20.0),
-                    CastScroller(movieDetail.actors),
+                    CastScroller(movieDetail.casts),
                     SizedBox(height: 20.0),
                   ],
                 )

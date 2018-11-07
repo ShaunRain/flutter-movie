@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_movie/model/movie_info.dart';
+import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/ui/GradientAppBar.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/ui/parallax/parallax_image.dart';
 import 'package:flutter_movie/ui/parallax/parallex_item.dart';
-import 'package:flutter_movie/ui/parallax/parallex_page_view.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 
 class MovieHomePage extends StatefulWidget {
@@ -16,7 +16,7 @@ class MovieHomePage extends StatefulWidget {
 }
 
 class _MovieHomePageState extends State<MovieHomePage> {
-  List<MovieInfo> movieInfos;
+  List<Subject> movieInfos;
 
   @override
   void initState() {
@@ -26,13 +26,13 @@ class _MovieHomePageState extends State<MovieHomePage> {
 
   void _getMoviePopular() async {
     Dio dio = new Dio();
-    Response response = await dio.get(MovieApi.MOVIE_POPULAR_API);
+    Response response = await dio.get(MovieApi.MOVIE_IN_THEATERS_API);
 
     setState(() {
-      movieInfos = response.data['movies']
-          .map((json) => MovieInfo.fromJson(json))
+      movieInfos = response.data['subjects']
+          .map((json) => Subject.fromJson(json))
           .toList()
-          .cast<MovieInfo>();
+          .cast<Subject>();
     });
   }
 
@@ -54,7 +54,7 @@ class _MovieHomePageState extends State<MovieHomePage> {
           children: <Widget>[
             GradientAppBar('Movies'),
             movieInfos != null
-                ? new MovieHorizontalScroller(movieInfos)
+                ? new MovieHorizontalScroller(movieInfos, "正在热映")
                 : SizedBox(),
 //            ParallexPageView(list),
             new Container(

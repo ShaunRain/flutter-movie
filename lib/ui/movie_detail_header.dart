@@ -14,7 +14,7 @@ class MovieDetailHeader extends StatelessWidget {
     return new SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-          children: movieDetail.type
+          children: movieDetail.tags
               .map((type) => Padding(
                     padding: const EdgeInsets.only(right: 12.0),
                     child: Chip(
@@ -33,7 +33,7 @@ class MovieDetailHeader extends StatelessWidget {
     var movieInfo = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(movieDetail.name, style: textTheme.title),
+        Text(movieDetail.title, style: textTheme.title),
         SizedBox(height: 4.0),
         RatingInfo(movieDetail),
         SizedBox(height: 4.0),
@@ -45,7 +45,7 @@ class MovieDetailHeader extends StatelessWidget {
       children: <Widget>[
         Padding(
             padding: const EdgeInsets.only(bottom: 140.0),
-            child: new ArcBanner(movieDetail.stageImg.list[0].imgUrl)),
+            child: new ArcBanner(movieDetail.photos[0].image)),
         Positioned(
           bottom: 0.0,
           left: 16.0,

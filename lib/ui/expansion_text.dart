@@ -51,10 +51,14 @@ class _ExpansionTextState extends State<ExpansionText> {
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text("more",
+                Text(maxLines <= 4 ? "more" : "fold",
                     style: textTheme.body1.copyWith(color: Colors.redAccent)),
-                Icon(Icons.keyboard_arrow_down,
-                    color: Colors.redAccent, size: 18.0)
+                Icon(
+                    maxLines <= 4
+                        ? Icons.keyboard_arrow_down
+                        : Icons.keyboard_arrow_up,
+                    color: Colors.redAccent,
+                    size: 18.0)
               ],
             ))
       ],

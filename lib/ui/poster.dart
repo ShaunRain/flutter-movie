@@ -5,7 +5,7 @@ class Poster extends StatefulWidget {
   final String posterUrl;
   double posterHeight;
   double posterWidth;
-  final int movieId;
+  final String movieId;
 
   Poster(this.posterUrl, this.posterHeight, this.posterWidth, this.movieId);
 

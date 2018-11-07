@@ -1,11 +1,13 @@
 class MovieApi {
-  static final String MOVIE_DETAIL_API =
-      "https://ticket-api-m.mtime.cn/movie/detail.api";
+  static final String DOUBAN_API_KEY = "0b2bdeda43b5688921839c8ecb20399b";
 
-  static final String MOVIE_POPULAR_API =
-      "https://api-m.mtime.cn/PageSubArea/HotPlayMovies.api?locationId=974";
+  static final String MOVIE_DETAIL_API =
+      "http://api.douban.com/v2/movie/subject/";
+
+  static final String MOVIE_IN_THEATERS_API =
+      "https://api.douban.com/v2/movie/in_theaters";
 
   static final String ACTOR_DETAIL_API =
-      "https://ticket-api-m.mtime.cn/person/detail.api";
+      "https://api.douban.com/v2/movie/celebrity/";
 
 }

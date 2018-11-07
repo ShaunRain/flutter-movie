@@ -1,56 +1,37 @@
 import 'dart:convert' show json;
+import 'package:flutter_movie/model/actor_detail.dart';
+import 'package:flutter_movie/model/cast.dart';
+import 'package:flutter_movie/model/director.dart';
+import 'package:flutter_movie/model/img.dart';
+import 'package:flutter_movie/model/rating.dart';
 
 class MovieInfo {
-  int length;
-  int movieId;
-  int rDay;
-  int rMonth;
-  int rYear;
-  int wantedCount;
-  num ratingFinal;
-  bool is3D;
-  bool isDMAX;
-  bool isFilter;
-  bool isHot;
-  bool isIMAX;
-  bool isIMAX3D;
-  bool isNew;
-  String actorName1;
-  String actorName2;
-  String btnText;
-  String commonSpecial;
-  String directorName;
-  String img;
-  String titleCn;
-  String titleEn;
-  String type;
-  NearestShowTime nearestShowtime;
+  int collect_count;
+  String alt;
+  String id;
+  String original_title;
+  String subtype;
+  String title;
+  String year;
+  List<Cast> casts;
+  List<Director> directors;
+  List<String> genres;
+  Img images;
+  Rating rating;
 
   MovieInfo.fromParams(
-      {this.length,
-      this.movieId,
-      this.rDay,
-      this.rMonth,
-      this.rYear,
-      this.wantedCount,
-      this.ratingFinal,
-      this.is3D,
-      this.isDMAX,
-      this.isFilter,
-      this.isHot,
-      this.isIMAX,
-      this.isIMAX3D,
-      this.isNew,
-      this.actorName1,
-      this.actorName2,
-      this.btnText,
-      this.commonSpecial,
-      this.directorName,
-      this.img,
-      this.titleCn,
-      this.titleEn,
-      this.type,
-      this.nearestShowtime});
+      {this.collect_count,
+      this.alt,
+      this.id,
+      this.original_title,
+      this.subtype,
+      this.title,
+      this.year,
+      this.casts,
+      this.directors,
+      this.genres,
+      this.images,
+      this.rating});
 
   factory MovieInfo(jsonStr) => jsonStr == null
       ? null
@@ -59,61 +40,41 @@ class MovieInfo {
           : new MovieInfo.fromJson(jsonStr);
 
   MovieInfo.fromJson(jsonRes) {
-    length = jsonRes['length'];
-    movieId = jsonRes['movieId'];
-    rDay = jsonRes['rDay'];
-    rMonth = jsonRes['rMonth'];
-    rYear = jsonRes['rYear'];
-    wantedCount = jsonRes['wantedCount'];
-    ratingFinal = jsonRes['ratingFinal'];
-    is3D = jsonRes['is3D'];
-    isDMAX = jsonRes['isDMAX'];
-    isFilter = jsonRes['isFilter'];
-    isHot = jsonRes['isHot'];
-    isIMAX = jsonRes['isIMAX'];
-    isIMAX3D = jsonRes['isIMAX3D'];
-    isNew = jsonRes['isNew'];
-    actorName1 = jsonRes['actorName1'];
-    actorName2 = jsonRes['actorName2'];
-    btnText = jsonRes['btnText'];
-    commonSpecial = jsonRes['commonSpecial'];
-    directorName = jsonRes['directorName'];
-    img = jsonRes['img'];
-    titleCn = jsonRes['titleCn'];
-    titleEn = jsonRes['titleEn'];
-    type = jsonRes['type'];
-    nearestShowtime = jsonRes['nearestShowtime'] == null
+    collect_count = jsonRes['collect_count'];
+    alt = jsonRes['alt'];
+    id = jsonRes['id'];
+    original_title = jsonRes['original_title'];
+    subtype = jsonRes['subtype'];
+    title = jsonRes['title'];
+    year = jsonRes['year'];
+    casts = jsonRes['casts'] == null ? null : [];
+
+    for (var castsItem in casts == null ? [] : jsonRes['casts']) {
+      casts.add(castsItem == null ? null : new Cast.fromJson(castsItem));
+    }
+
+    directors = jsonRes['directors'] == null ? null : [];
+
+    for (var directorsItem in directors == null ? [] : jsonRes['directors']) {
+      directors.add(
+          directorsItem == null ? null : new Director.fromJson(directorsItem));
+    }
+
+    genres = jsonRes['genres'] == null ? null : [];
+
+    for (var genresItem in genres == null ? [] : jsonRes['genres']) {
+      genres.add(genresItem);
+    }
+
+    images =
+        jsonRes['images'] == null ? null : new Img.fromJson(jsonRes['images']);
+    rating = jsonRes['rating'] == null
         ? null
-        : new NearestShowTime.fromJson(jsonRes['nearestShowtime']);
+        : new Rating.fromJson(jsonRes['rating']);
   }
 
   @override
   String toString() {
-    return '{"length": $length,"movieId": $movieId,"rDay": $rDay,"rMonth": $rMonth,"rYear": $rYear,"wantedCount": $wantedCount,"ratingFinal": $ratingFinal,"is3D": $is3D,"isDMAX": $isDMAX,"isFilter": $isFilter,"isHot": $isHot,"isIMAX": $isIMAX,"isIMAX3D": $isIMAX3D,"isNew": $isNew,"actorName1": ${actorName1 != null ? '${json.encode(actorName1)}' : 'null'},"actorName2": ${actorName2 != null ? '${json.encode(actorName2)}' : 'null'},"btnText": ${btnText != null ? '${json.encode(btnText)}' : 'null'},"commonSpecial": ${commonSpecial != null ? '${json.encode(commonSpecial)}' : 'null'},"directorName": ${directorName != null ? '${json.encode(directorName)}' : 'null'},"img": ${img != null ? '${json.encode(img)}' : 'null'},"titleCn": ${titleCn != null ? '${json.encode(titleCn)}' : 'null'},"titleEn": ${titleEn != null ? '${json.encode(titleEn)}' : 'null'},"type": ${type != null ? '${json.encode(type)}' : 'null'},"nearestShowtime": $nearestShowtime}';
-  }
-}
-
-class NearestShowTime {
-  int nearestCinemaCount;
-  int nearestShowDay;
-  int nearestShowtimeCount;
-  bool isTicket;
-
-  NearestShowTime.fromParams(
-      {this.nearestCinemaCount,
-      this.nearestShowDay,
-      this.nearestShowtimeCount,
-      this.isTicket});
-
-  NearestShowTime.fromJson(jsonRes) {
-    nearestCinemaCount = jsonRes['nearestCinemaCount'];
-    nearestShowDay = jsonRes['nearestShowDay'];
-    nearestShowtimeCount = jsonRes['nearestShowtimeCount'];
-    isTicket = jsonRes['isTicket'];
-  }
-
-  @override
-  String toString() {
-    return '{"nearestCinemaCount": $nearestCinemaCount,"nearestShowDay": $nearestShowDay,"nearestShowtimeCount": $nearestShowtimeCount,"isTicket": $isTicket}';
+    return '{"collect_count": $collect_count,"alt": ${alt != null ? '${json.encode(alt)}' : 'null'},"id": ${id != null ? '${json.encode(id)}' : 'null'},"original_title": ${original_title != null ? '${json.encode(original_title)}' : 'null'},"subtype": ${subtype != null ? '${json.encode(subtype)}' : 'null'},"title": ${title != null ? '${json.encode(title)}' : 'null'},"year": ${year != null ? '${json.encode(year)}' : 'null'},"casts": $casts,"directors": $directors,"genres": $genres,"images": $images,"rating": $rating}';
   }
 }

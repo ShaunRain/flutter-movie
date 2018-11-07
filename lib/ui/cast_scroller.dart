@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/model/cast.dart';
 import 'package:flutter_movie/model/movie_detail.dart';
 import 'package:flutter_movie/page/actor_detail_page.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 class CastScroller extends StatelessWidget {
-  final List<Actor> actors;
+  final List<Cast> actors;
 
   CastScroller(this.actors);
 
-  Widget _buildCast(BuildContext context, Actor actor) {
+  Widget _buildCast(BuildContext context, Cast cast) {
     ImageProvider avatarImg = NetworkImage(
-        actor.roleImg.length > 0 ? actor.roleImg : actor.img);
+        cast.avatars.medium);
 
     return Padding(
       padding: const EdgeInsets.only(right: 18.0),
@@ -20,13 +21,13 @@ class CastScroller extends StatelessWidget {
             context,
             new MaterialPageRoute(
                 builder: (context) => new ActorDetailPage(
-                      personId: actor.actorId,
+                      personId: cast.id,
                       avatar: avatarImg,
                     ))),
         child: Column(
           children: <Widget>[
             new Hero(
-                tag: 'tag-avatar-${actor.actorId}',
+                tag: 'tag-avatar-${cast.id}',
                 child: CircleAvatar(
                   backgroundImage: avatarImg,
                   radius: 40.0,
@@ -34,7 +35,7 @@ class CastScroller extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                actor.nameEn,
+                cast.name_en,
                 softWrap: true,
               ),
             ),
