@@ -6,15 +6,18 @@ import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui' as ui;
+import 'package:logging/logging.dart';
 
 class ActorDetailPage extends StatefulWidget {
   String personId;
   Animation animation;
   ImageProvider avatar;
+  String avatarUrl;
 
   ActorDetailPage(
       {@required this.personId,
-      @required this.avatar,
+      this.avatar,
+      this.avatarUrl,
       AnimationController controller});
 
   @override
@@ -27,11 +30,16 @@ class _ActorDetailPage extends State<ActorDetailPage> {
 
   double top;
 
+  int current = 0;
+  bool isRequest = false;
+  bool isEnd = false;
+  ScrollController _controller = ScrollController();
+
   @override
   void initState() {
     super.initState();
     _getActorDetail();
-    _getActorWorks();
+    _getActorWorks(0, 10);
   }
 
   _getActorDetail() async {
@@ -45,18 +53,40 @@ class _ActorDetailPage extends State<ActorDetailPage> {
     setState(() {});
   }
 
-  _getActorWorks() async {
+  _getActorWorks(int start, int count) async {
+    if (isRequest || isEnd) {
+      return;
+    }
+
+    isRequest = true;
+
+    print("request ${start}");
+
     Dio dio = new Dio();
 
     Response response = await dio.get(
-        "${MovieApi.ACTOR_DETAIL_API + widget.personId}/works?apikey=${MovieApi.DOUBAN_API_KEY}");
+        "${MovieApi.ACTOR_DETAIL_API + widget.personId}/works?start=${start}&count=${count}&apikey=${MovieApi.DOUBAN_API_KEY}");
 
-    actorWorks = response.data['works']
+    List<Subject> rawWorks = response.data['works']
         .map((json) => Subject.fromJson(json['subject']))
         .toList()
-        .cast<Subject>()
-        .where((subject) => int.parse(subject.year) <= 2018)
-        .toList();
+        .cast<Subject>();
+
+    if (actorWorks == null) {
+      actorWorks =
+          rawWorks.where((subject) => int.parse(subject.year) <= 2018).toList();
+    } else {
+      actorWorks
+          .addAll(rawWorks.where((subject) => int.parse(subject.year) <= 2018));
+    }
+
+    current += count;
+
+    if (rawWorks.length < count) {
+      isEnd = true;
+    }
+
+    isRequest = false;
 
     setState(() {});
   }
@@ -66,9 +96,21 @@ class _ActorDetailPage extends State<ActorDetailPage> {
       return SizedBox();
     }
 
+    _controller
+      ..addListener(() {
+//        print(
+//            "${_controller.position.pixels} / ${_controller.position
+//                .maxScrollExtent}");
+        if (_controller.position.pixels >=
+            _controller.position.maxScrollExtent * 0.6) {
+          _getActorWorks(current, 10);
+        }
+      });
+
     return new MovieHorizontalScroller(
       actorWorks,
       title: "代表作品",
+      controller: _controller,
       ratio: 0.7,
       textColor: Colors.white,
     );
@@ -121,7 +163,7 @@ class _ActorDetailPage extends State<ActorDetailPage> {
       child: new Hero(
           tag: 'tag-avatar-${widget.personId}',
           child: CircleAvatar(
-            backgroundImage: widget.avatar,
+            backgroundImage: widget.avatar ?? Image.network(widget.avatarUrl).image,
             radius: 55.0,
           )),
     );

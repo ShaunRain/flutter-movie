@@ -11,8 +11,9 @@ import 'package:flutter_movie/util/movie_api.dart';
 class MovieDetailPage extends StatefulWidget {
   String movieId;
   Poster poster;
+  String posterUrl;
 
-  MovieDetailPage(this.movieId, this.poster);
+  MovieDetailPage(this.movieId, {this.poster, this.posterUrl});
 
   @override
   State<MovieDetailPage> createState() => new _MovieDetailPageState();
@@ -54,7 +55,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               movieDetail != null ? MovieDetailHeader(movieDetail) : SizedBox(),
               Padding(
                 padding: const EdgeInsets.only(top: 190.0, left: 15.0),
-                child: widget.poster.reseize(height: 180.0, width: 126.0),
+                child: widget.poster == null
+                    ? Poster(widget.posterUrl, 180.0, 126.0, widget.movieId)
+                    : widget.poster.reseize(height: 180.0, width: 126.0),
               )
             ],
           ),

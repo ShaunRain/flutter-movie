@@ -28,6 +28,7 @@ class VideoCard extends StatelessWidget {
         child: GestureDetector(
           child: _buildInlineVideo(),
           onTap: pushFullScreenWidget,
+          onVerticalDragEnd: (details) => Navigator.pop(context),
         ));
   }
 

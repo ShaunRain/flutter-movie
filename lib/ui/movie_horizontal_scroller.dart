@@ -8,9 +8,10 @@ class MovieHorizontalScroller extends StatelessWidget {
   String title;
   double ratio;
   Color textColor;
+  ScrollController controller;
 
   MovieHorizontalScroller(this.movieInfos,
-      {@required this.title, double ratio, Color textColor})
+      {@required this.title, double ratio, Color textColor, this.controller})
       : this.ratio = ratio ?? 1.0,
         this.textColor = textColor ?? Colors.black45;
 
@@ -31,13 +32,14 @@ class MovieHorizontalScroller extends StatelessWidget {
                     context,
                     new MaterialPageRoute(
                         builder: (context) =>
-                            new MovieDetailPage(info.id, poster))),
+                            new MovieDetailPage(info.id, poster: poster))),
                 child: poster,
               ),
               SizedBox(height: 6.0 * ratio),
               Container(
                 child: Text(info.title,
-                    style: textTheme.subhead.copyWith(fontSize: 16.0 * ratio, color: textColor),
+                    style: textTheme.subhead
+                        .copyWith(fontSize: 16.0 * ratio, color: textColor),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis),
                 width: 160.0 * ratio,
@@ -72,10 +74,12 @@ class MovieHorizontalScroller extends StatelessWidget {
             padding: EdgeInsets.symmetric(
                 horizontal: 20.0 * ratio, vertical: 12.0 * ratio),
             child: Text(title,
-                style: textTheme.subhead.copyWith(fontSize: 18.0, color: textColor))),
+                style: textTheme.subhead
+                    .copyWith(fontSize: 18.0, color: textColor))),
         new Container(
           height: 305.0 * ratio,
           child: new ListView.builder(
+              controller: controller,
               padding: EdgeInsets.only(left: 20.0 * ratio),
               scrollDirection: Axis.horizontal,
               itemCount: movieInfos.length,

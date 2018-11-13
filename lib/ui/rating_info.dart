@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/movie_detail.dart';
+import 'package:flutter_movie/model/rating.dart';
 
 class RatingInfo extends StatelessWidget {
-  final MovieDetail movieDetail;
+  Rating rating;
+  bool showText;
 
-  RatingInfo(this.movieDetail);
+  RatingInfo(this.rating, {this.showText = true});
 
   Widget _buildStars() {
     var stars = <Widget>[];
 
     for (var i = 1; i <= 5; i++) {
       IconData iconData;
-      if (i > movieDetail.rating.average/ 2) {
+      if (i > rating.average / 2) {
         iconData = Icons.star_border;
-        if (i - 0.5 <= movieDetail.rating.average / 2) {
+        if (i - 0.5 <= rating.average / 2) {
           iconData = Icons.star_half;
         }
       } else {
@@ -62,9 +64,9 @@ class RatingInfo extends StatelessWidget {
       ratingText = "Bad";
     } else if (ratingNum >= 3.0) {
       ratingText = "Awful";
-    } else if(ratingNum <= 0){
+    } else if (ratingNum <= 0) {
       ratingText = "None";
-    }else {
+    } else {
       ratingText = "Disaster";
     }
 
@@ -78,16 +80,19 @@ class RatingInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         new Text(
-          (movieDetail.rating.average * 1.0).toString(),
+          (rating.average * 1.0).toString(),
           style: TextStyle(
               color: Colors.redAccent,
               fontWeight: FontWeight.w600,
               fontSize: 22.0),
         ),
-        SizedBox(height: 4.0),
-        new Text("Ratings",
-            style:
-                TextStyle(color: Colors.black45, fontWeight: FontWeight.w200))
+        showText
+            ? Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: new Text("Ratings",
+                    style: TextStyle(
+                        color: Colors.black45, fontWeight: FontWeight.w200)))
+            : Container()
       ],
     );
 
@@ -96,14 +101,22 @@ class RatingInfo extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         _buildStars(),
-        Padding(
-          padding: const EdgeInsets.only(top: 4.0, left: 4.0),
-          child: Text(_getRatingText(movieDetail.rating.average),
-              style: TextStyle(
-                  color: Colors.black45, fontWeight: FontWeight.w200)),
-        ),
+        showText
+            ? Padding(
+                padding: const EdgeInsets.only(top: 4.0, left: 4.0),
+                child: Text(_getRatingText(rating.average),
+                    style: TextStyle(
+                        color: Colors.black45, fontWeight: FontWeight.w200)),
+              )
+            : Container(),
       ],
     );
+
+    if (rating.average == 0.0) {
+      return new Text('暂无评分',
+          style:
+              TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600));
+    }
 
     return new Row(
       crossAxisAlignment: CrossAxisAlignment.end,

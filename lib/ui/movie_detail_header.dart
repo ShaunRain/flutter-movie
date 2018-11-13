@@ -33,7 +33,7 @@ class MovieDetailHeader extends StatelessWidget {
       children: <Widget>[
         Text(movieDetail.title, style: textTheme.title),
         SizedBox(height: 4.0),
-        RatingInfo(movieDetail),
+        RatingInfo(movieDetail.rating),
         SizedBox(height: 4.0),
         _buildTypeChips(textTheme)
       ],

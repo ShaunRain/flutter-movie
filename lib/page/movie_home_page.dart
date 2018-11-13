@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/page/video_app.dart';
-import 'package:flutter_movie/ui/GradientAppBar.dart';
+import 'package:flutter_movie/ui/app_bar.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/ui/parallax/parallax_image.dart';
 import 'package:flutter_movie/ui/parallax/parallex_item.dart';
@@ -15,7 +15,8 @@ class MovieHomePage extends StatefulWidget {
   }
 }
 
-class _MovieHomePageState extends State<MovieHomePage> {
+class _MovieHomePageState extends State<MovieHomePage>
+    with AutomaticKeepAliveClientMixin {
   List<Subject> movieInfos;
 
   @override
@@ -52,18 +53,19 @@ class _MovieHomePageState extends State<MovieHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            GradientAppBar('Movies'),
+//            MovieAppBar('Movies'),
             movieInfos != null
-                ? new MovieHorizontalScroller(movieInfos, title: "正在热映")
+                ? new MovieHorizontalScroller(movieInfos,
+                    title: "正在热映", ratio: 0.9)
                 : SizedBox(),
 //            ParallexPageView(list),
-            new Container(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              constraints: const BoxConstraints(maxHeight: 200.0),
-              child: new ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: _buildHorizontalChild),
-            )
+//            new Container(
+//              padding: const EdgeInsets.symmetric(vertical: 10.0),
+//              constraints: BoxConstraintsconst BoxConstraints(maxHeight: 200.0),
+//              child: new ListView.builder(
+//                  scrollDirection: Axis.horizontal,
+//                  itemBuilder: _buildHorizontalChild),
+//            )
           ],
         ),
       ),
@@ -83,4 +85,7 @@ class _MovieHomePageState extends State<MovieHomePage> {
               image: new ExactAssetImage('assets/img$index.jpg'),
             )));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

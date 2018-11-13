@@ -10,4 +10,7 @@ class MovieApi {
   static final String ACTOR_DETAIL_API =
       "https://api.douban.com/v2/movie/celebrity/";
 
+  static final String MOVIE_SEARCH_API =
+      "https://api.douban.com/v2/movie/search";
+
 }
