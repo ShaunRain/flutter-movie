@@ -76,12 +76,12 @@ class ArcClipper extends CustomClipper<Path> {
     path.lineTo(0.0, size.height - 30);
 
     var firstControlPoint = Offset(size.width / 4, size.height);
-    var firstEndPoint = Offset(size.width / 2, size.height);
+    var firstEndPoint = Offset(size.width * 1 / 3, size.height);
     path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
         firstEndPoint.dx, firstEndPoint.dy);
 
-    var secondControlPoint = Offset(size.width * 3 / 4, size.height);
-    var secondEndPoint = Offset(size.width, size.height - 30);
+    var secondControlPoint = Offset(size.width * 2 / 3, size.height);
+    var secondEndPoint = Offset(size.width, size.height - 60);
     path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
         secondEndPoint.dx, secondEndPoint.dy);
 

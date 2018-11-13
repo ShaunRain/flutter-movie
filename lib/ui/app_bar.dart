@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/page/movie_search_page.dart';
@@ -50,8 +51,9 @@ class MovieAppBar extends StatelessWidget {
                       ),
                       onPressed: () => Navigator.push(
                           context,
-                          new MaterialPageRoute(
-                              builder: (context) => new MovieSearchPage()))
+                          PageRouteBuilder(
+                              pageBuilder: (_, __, ___) =>
+                                  new MovieSearchPage()))
 //                        () => showSearch(context: context, delegate: _MovieSearchDelegate()),
                       ))
             ],

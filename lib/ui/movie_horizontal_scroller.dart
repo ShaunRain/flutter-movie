@@ -19,8 +19,12 @@ class MovieHorizontalScroller extends StatelessWidget {
     Subject info = movieInfos[index];
     var textTheme = Theme.of(context).textTheme;
 
-    var poster =
-        new Poster(info.images.large, 240.0 * ratio, 160.0 * ratio, info.id);
+    var poster = new Poster(
+        source: title,
+        posterUrl: info.images.large,
+        posterHeight: 240.0 * ratio,
+        posterWidth: 160.0 * ratio,
+        movieId: info.id);
 
     return Padding(
         padding: EdgeInsets.only(right: 14.0 * ratio),

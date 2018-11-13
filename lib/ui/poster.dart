@@ -6,8 +6,9 @@ class Poster extends StatefulWidget {
   double posterHeight;
   double posterWidth;
   final String movieId;
+  String source;
 
-  Poster(this.posterUrl, this.posterHeight, this.posterWidth, this.movieId);
+  Poster({this.posterUrl, this.posterHeight, this.posterWidth, this.movieId, this.source});
 
 //  Poster copyWith({double height, double width}) {
 //    return Poster(
@@ -32,7 +33,7 @@ class _PosterState extends State<Poster> {
   @override
   Widget build(BuildContext context) {
     return Hero(
-        tag: 'poster-hero-${widget.movieId}',
+        tag: 'poster-hero-${widget.movieId + widget.source}',
         child: new ClipRRect(
             borderRadius: new BorderRadius.circular(4.0),
             child: new FadeInImage.memoryNetwork(

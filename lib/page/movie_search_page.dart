@@ -23,8 +23,8 @@ class _MovieSearchPageState extends State<MovieSearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new MaterialSearch<Subject>(
+    return new Material(
+      child: new MaterialSearch<Subject>(
         placeholder: '输入电影名',
         getResults: (String query) async {
           List<Subject> results = await requestSearch(query);

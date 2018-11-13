@@ -88,7 +88,7 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          new Flexible(flex: 1, child: MovieAppBar('Movie')),
+          new Flexible(flex: 1, child: MovieAppBar('MOVIE')),
           new Flexible(
               flex: 8,
               child: new PageView(

@@ -44,7 +44,7 @@ class MovieSearchItem<T> extends MaterialSearchResult<T> {
                   children: <Widget>[
                     Text(
                       subject.title,
-                      style: TextStyle(fontSize: 22.0, color: Colors.black),
+                      style: TextStyle(fontSize: 18.0, color: Colors.black),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

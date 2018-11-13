@@ -56,7 +56,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
               Padding(
                 padding: const EdgeInsets.only(top: 190.0, left: 15.0),
                 child: widget.poster == null
-                    ? Poster(widget.posterUrl, 180.0, 126.0, widget.movieId)
+                    ? Poster(
+                        posterUrl: widget.posterUrl,
+                        posterHeight: 180.0,
+                        posterWidth: 126.0,
+                        movieId: widget.movieId)
                     : widget.poster.reseize(height: 180.0, width: 126.0),
               )
             ],

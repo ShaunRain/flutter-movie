@@ -17,12 +17,14 @@ class MovieHomePage extends StatefulWidget {
 
 class _MovieHomePageState extends State<MovieHomePage>
     with AutomaticKeepAliveClientMixin {
-  List<Subject> movieInfos;
+  List<Subject> popularMovies;
+  List<Subject> weeklyMovies;
 
   @override
   void initState() {
     super.initState();
     _getMoviePopular();
+    _getMovieWeekly();
   }
 
   void _getMoviePopular() async {
@@ -30,8 +32,21 @@ class _MovieHomePageState extends State<MovieHomePage>
     Response response = await dio.get(MovieApi.MOVIE_IN_THEATERS_API);
 
     setState(() {
-      movieInfos = response.data['subjects']
+      popularMovies = response.data['subjects']
           .map((json) => Subject.fromJson(json))
+          .toList()
+          .cast<Subject>();
+    });
+  }
+
+  void _getMovieWeekly() async {
+    Dio dio = new Dio();
+    Response response = await dio
+        .get(MovieApi.MOVIE_WEEKLY_API + '?apikey=' + MovieApi.DOUBAN_API_KEY);
+
+    setState(() {
+      weeklyMovies = response.data['subjects']
+          .map((json) => Subject.fromJson(json['subject']))
           .toList()
           .cast<Subject>();
     });
@@ -54,9 +69,18 @@ class _MovieHomePageState extends State<MovieHomePage>
         child: Column(
           children: <Widget>[
 //            MovieAppBar('Movies'),
-            movieInfos != null
-                ? new MovieHorizontalScroller(movieInfos,
+            popularMovies != null
+                ? new MovieHorizontalScroller(popularMovies,
                     title: "正在热映", ratio: 0.9)
+                : SizedBox(),
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              height: 1.0,
+              color: Colors.black12,
+            ),
+            weeklyMovies != null
+                ? new MovieHorizontalScroller(weeklyMovies,
+                    title: "口碑榜", ratio: 0.9)
                 : SizedBox(),
 //            ParallexPageView(list),
 //            new Container(
