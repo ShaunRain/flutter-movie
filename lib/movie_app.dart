@@ -37,36 +37,36 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
     ];
   }
 
-  Widget _buildTransitionStack() {
-    List<FadeTransition> transitions = <FadeTransition>[];
+//  Widget _buildTransitionStack() {
+//    List<FadeTransition> transitions = <FadeTransition>[];
+//
+//    transitions.add(_navigationViews[0].transition(context, new Container()));
+//    transitions
+//        .add(_navigationViews[1].transition(context, new MovieHomePage()));
+//    transitions.add(_navigationViews[2].transition(context, new Container()));
+//
+//    transitions.sort((FadeTransition a, FadeTransition b) {
+//      Animation animationA = a.opacity;
+//      Animation animationB = b.opacity;
+//      return animationA.value.compareTo(animationB.value);
+//    });
+//
+//    return Stack(children: transitions);
+//  }
 
-    transitions.add(_navigationViews[0].transition(context, new Container()));
-    transitions
-        .add(_navigationViews[1].transition(context, new MovieHomePage()));
-    transitions.add(_navigationViews[2].transition(context, new Container()));
-
-    transitions.sort((FadeTransition a, FadeTransition b) {
-      Animation animationA = a.opacity;
-      Animation animationB = b.opacity;
-      return animationA.value.compareTo(animationB.value);
-    });
-
-    return Stack(children: transitions);
-  }
-
-  @override
-  void dispose() {
-    for (NavigationIconView view in _navigationViews) {
-      view.controller.dispose();
-    }
-    super.dispose();
-  }
+//  @override
+//  void dispose() {
+//    for (NavigationIconView view in _navigationViews) {
+//      view.controller.dispose();
+//    }
+//    super.dispose();
+//  }
 
   void _switchBar(int index) {
     setState(() {
-      _navigationViews[_currentIndex].controller.reverse();
+//      _navigationViews[_currentIndex].controller.reverse();
       _currentIndex = index;
-      _navigationViews[_currentIndex].controller.forward();
+//      _navigationViews[_currentIndex].controller.forward();
     });
   }
 

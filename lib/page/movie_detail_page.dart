@@ -39,12 +39,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
     setState(() {});
   }
 
-  void updateState(f) {
-    setState(f);
-  }
-
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    var textTheme = theme.textTheme;
+
     return new Scaffold(
 //        appBar: new AppBar(backgroundColor: Colors.black),
         body: SingleChildScrollView(
@@ -70,7 +69,16 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.all(20.0),
-                      child: ExpansionText(movieDetail.summary),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Story Line",
+                            style: textTheme.subhead.copyWith(fontSize: 18.0),
+                          ),
+                          ExpansionText(movieDetail.summary)
+                        ],
+                      ),
                     ),
                     PhotoScroller(movieDetail.photos
                         .map((photo) => photo.thumb)

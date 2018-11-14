@@ -2,27 +2,34 @@ import 'package:flutter/material.dart';
 
 class ExpansionText extends StatefulWidget {
   final String text;
+  TextStyle textStyle;
+  Color expandColor;
+  int expandLine;
 
-  ExpansionText(this.text);
+  ExpansionText(this.text,
+      {this.textStyle =
+          const TextStyle(color: Colors.black45, fontSize: 16.0, height: 1.0),
+      this.expandColor = Colors.redAccent, this.expandLine = 4});
 
   @override
   _ExpansionTextState createState() => _ExpansionTextState();
 }
 
 class _ExpansionTextState extends State<ExpansionText> {
-  int maxLines = 4;
+  int maxLines;
 
   @override
   void initState() {
     super.initState();
+    maxLines = widget.expandLine;
   }
 
   void _toggle() {
     setState(() {
-      if (maxLines <= 4) {
+      if (maxLines <= widget.expandLine) {
         maxLines = 100;
       } else {
-        maxLines = 4;
+        maxLines = widget.expandLine;
       }
     });
   }
@@ -35,29 +42,27 @@ class _ExpansionTextState extends State<ExpansionText> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "Story Line",
-          style: textTheme.subhead.copyWith(fontSize: 18.0),
-        ),
         SizedBox(height: 8.0),
         Text(widget.text,
             overflow: TextOverflow.ellipsis,
             maxLines: maxLines,
-            style: textTheme.body1
-                .copyWith(fontSize: 16.0, color: Colors.black45)),
+            style: textTheme.body1.copyWith(
+                fontSize: widget.textStyle.fontSize,
+                color: widget.textStyle.color,
+                height: widget.textStyle.height)),
         GestureDetector(
             onTap: _toggle,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Text(maxLines <= 4 ? "more" : "fold",
-                    style: textTheme.body1.copyWith(color: Colors.redAccent)),
+                Text(maxLines <= widget.expandLine ? "more" : "fold",
+                    style: textTheme.body1.copyWith(color: widget.expandColor)),
                 Icon(
-                    maxLines <= 4
+                    maxLines <= widget.expandLine
                         ? Icons.keyboard_arrow_down
                         : Icons.keyboard_arrow_up,
-                    color: Colors.redAccent,
+                    color: widget.expandColor,
                     size: 18.0)
               ],
             ))

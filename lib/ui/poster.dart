@@ -8,7 +8,12 @@ class Poster extends StatefulWidget {
   final String movieId;
   String source;
 
-  Poster({this.posterUrl, this.posterHeight, this.posterWidth, this.movieId, this.source});
+  Poster(
+      {this.posterUrl,
+      this.posterHeight,
+      this.posterWidth,
+      this.movieId,
+      this.source = " "});
 
 //  Poster copyWith({double height, double width}) {
 //    return Poster(
@@ -25,11 +30,9 @@ class Poster extends StatefulWidget {
     posterWidth = width ?? posterWidth;
     return this;
   }
-
 }
 
 class _PosterState extends State<Poster> {
-
   @override
   Widget build(BuildContext context) {
     return Hero(

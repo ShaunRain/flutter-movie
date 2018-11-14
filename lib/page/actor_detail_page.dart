@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/animator/actor_detail_animation.dart';
 import 'package:flutter_movie/model/actor_detail.dart';
 import 'package:flutter_movie/model/subject.dart';
+import 'package:flutter_movie/ui/expansion_text.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -14,17 +16,16 @@ class ActorDetailPage extends StatefulWidget {
   ImageProvider avatar;
   String avatarUrl;
 
-  ActorDetailPage(
-      {@required this.personId,
-      this.avatar,
-      this.avatarUrl,
-      AnimationController controller});
+  ActorDetailPage({@required this.personId, this.avatar, this.avatarUrl});
 
   @override
   _ActorDetailPage createState() => _ActorDetailPage();
 }
 
-class _ActorDetailPage extends State<ActorDetailPage> {
+class _ActorDetailPage extends State<ActorDetailPage>
+    with TickerProviderStateMixin {
+  AnimationController animationController;
+  ActorDetailAnimation animation;
   ActorDetail actorDetail;
   List<Subject> actorWorks;
 
@@ -38,8 +39,51 @@ class _ActorDetailPage extends State<ActorDetailPage> {
   @override
   void initState() {
     super.initState();
+
+    animationController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 2500));
+    animation = new ActorDetailAnimation(animationController);
+
     _getActorDetail();
     _getActorWorks(0, 10);
+
+    animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    animationController.dispose();
+  }
+
+  Widget _buildAnimation(BuildContext context, Widget child) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          actorDetail != null
+              ?
+//          Image(image: widget.avatar)
+              Opacity(
+                  opacity: animation.backdropOpacity.value,
+                  child: FadeInImage.memoryNetwork(
+                      fadeInDuration: Duration(milliseconds: 200),
+                      placeholder: kTransparentImage,
+                      image: actorDetail.avatars.small,
+                      fit: BoxFit.cover))
+              : SizedBox(),
+          BackdropFilter(
+              filter: ui.ImageFilter.blur(
+//                  sigmaX: 8.0, sigmaY: 8.0
+                  sigmaX: animation.backdropBlur.value,
+                  sigmaY: animation.backdropBlur.value),
+              child: Container(
+                color: Colors.black.withOpacity(0.5),
+              )),
+          _buildContent()
+        ],
+      ),
+    );
   }
 
   _getActorDetail() async {
@@ -60,7 +104,7 @@ class _ActorDetailPage extends State<ActorDetailPage> {
 
     isRequest = true;
 
-    print("request ${start}");
+//    print("request ${start}");
 
     Dio dio = new Dio();
 
@@ -107,40 +151,25 @@ class _ActorDetailPage extends State<ActorDetailPage> {
         }
       });
 
-    return new MovieHorizontalScroller(
-      actorWorks,
-      title: "代表作品",
-      controller: _controller,
-      ratio: 0.7,
-      textColor: Colors.white,
-    );
+    return Transform(
+        transform: new Matrix4.translationValues(
+            animation.worksTranslationX.value, 0.0, 0.0),
+        child: Opacity(
+            opacity: animation.worksOpacity.value,
+            child: new MovieHorizontalScroller(
+              actorWorks,
+              title: "代表作品",
+              controller: _controller,
+              ratio: 0.7,
+              textColor: Colors.white,
+            )));
   }
 
   @override
   Widget build(BuildContext context) {
     top = MediaQuery.of(context).padding.top;
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          actorDetail != null
-              ?
-//          Image(image: widget.avatar)
-              FadeInImage.memoryNetwork(
-                  fadeInDuration: Duration(milliseconds: 200),
-                  placeholder: kTransparentImage,
-                  image: actorDetail.avatars.small,
-                  fit: BoxFit.cover)
-              : SizedBox(),
-          BackdropFilter(
-              filter: ui.ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-              child: Container(
-                color: Colors.black.withOpacity(0.5),
-              )),
-          _buildContent()
-        ],
-      ),
-    );
+    return AnimatedBuilder(
+        animation: animationController, builder: _buildAnimation);
   }
 
   Widget _buildContent() {
@@ -153,20 +182,26 @@ class _ActorDetailPage extends State<ActorDetailPage> {
   }
 
   Widget _buildAvatar() {
-    return Container(
-      width: 120.0,
-      height: 120.0,
-      decoration: BoxDecoration(
-          shape: BoxShape.circle, border: Border.all(color: Colors.white30)),
-      margin: EdgeInsets.only(top: 32.0 + top, left: 16.0),
-      padding: const EdgeInsets.all(6.0),
-      child: new Hero(
-          tag: 'tag-avatar-${widget.personId}',
-          child: CircleAvatar(
-            backgroundImage: widget.avatar ?? Image.network(widget.avatarUrl).image,
-            radius: 55.0,
-          )),
-    );
+    return new Transform(
+        alignment: Alignment.center,
+        transform: new Matrix4.diagonal3Values(animation.avatarAnimation.value,
+            animation.avatarAnimation.value, 1.0),
+        child: Container(
+          width: 120.0,
+          height: 120.0,
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white30)),
+          margin: EdgeInsets.only(top: 32.0 + top, left: 16.0),
+          padding: const EdgeInsets.all(6.0),
+          child: new Hero(
+              tag: 'tag-avatar-${widget.personId}',
+              child: CircleAvatar(
+                backgroundImage:
+                    widget.avatar ?? Image.network(widget.avatarUrl).image,
+                radius: 55.0,
+              )),
+        ));
   }
 
   Widget _buildInfo() {
@@ -181,14 +216,16 @@ class _ActorDetailPage extends State<ActorDetailPage> {
           children: <Widget>[
             Text(actorDetail.name + '\n' + actorDetail.name_en,
                 style: TextStyle(
-                    color: Colors.white,
+                    color:
+                        Colors.white.withOpacity(animation.nameOpacity.value),
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0)),
             SizedBox(height: 10.0),
             Text(
               actorDetail.born_place,
               style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
+                  color:
+                      Colors.white.withOpacity(animation.locationOpacity.value),
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0),
             ),
@@ -196,16 +233,22 @@ class _ActorDetailPage extends State<ActorDetailPage> {
               color: Colors.white.withOpacity(0.85),
               height: 1.0,
               margin: const EdgeInsets.symmetric(vertical: 16.0),
-              width: 225.0,
+              width: animation.dividerWidth.value,
             ),
-            Text(actorDetail.summary,
+            Opacity(
+              child: ExpansionText(actorDetail.summary,
 //                maxLines: 7,
 //                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                    height: 1.2,
-                    color: Colors.white.withOpacity(0.85),
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12.0))
+                  expandColor: Colors.tealAccent,
+                  expandLine: 8,
+                  textStyle: TextStyle(
+                      height: 1.2,
+                      color: Colors.white
+                          .withOpacity(animation.contentOpacity.value),
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14.0)),
+              opacity: animation.contentOpacity.value,
+            )
           ],
         ));
   }
