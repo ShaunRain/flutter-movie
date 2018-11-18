@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/page/video_app.dart';
-import 'package:flutter_movie/ui/app_bar.dart';
 import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/ui/parallax/parallax_image.dart';
 import 'package:flutter_movie/ui/parallax/parallex_item.dart';

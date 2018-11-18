@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/page/movie_home_page.dart';
+import 'package:flutter_movie/page/movie_selected_page.dart';
 import 'package:flutter_movie/ui/app_bar.dart';
 import 'package:flutter_movie/ui/bottom_navigation.dart';
 
@@ -13,16 +14,34 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
   List<NavigationIconView> _navigationViews;
   PageController pageController;
 
+  List<ColorSwatch> colors;
+  List<MovieAppBar> appBars;
+
+  TabController _tabController;
+
+  MovieAppBar appBar;
+
   @override
   void initState() {
     super.initState();
+    _tabController = new TabController(length: 3, vsync: this);
+
+    appBars = [
+      MovieAppBar([Colors.amber, Colors.amberAccent],
+          centerWidget: _buildTabBar()),
+      MovieAppBar([Colors.teal, Colors.tealAccent]),
+      MovieAppBar([Colors.lightBlue, Colors.lightBlueAccent])
+    ];
+
+    appBar = appBars[1];
+
     pageController = new PageController(initialPage: 1);
 
     _navigationViews = <NavigationIconView>[
       NavigationIconView(
           icon: Icon(Icons.movie_filter),
           title: "精选",
-          color: Colors.teal,
+          color: Colors.amber,
           vsync: this),
       NavigationIconView(
           icon: Icon(Icons.explore),
@@ -32,7 +51,7 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
       NavigationIconView(
           icon: Icon(Icons.account_box),
           title: "我的",
-          color: Colors.teal,
+          color: Colors.lightBlue,
           vsync: this)
     ];
   }
@@ -67,7 +86,20 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
 //      _navigationViews[_currentIndex].controller.reverse();
       _currentIndex = index;
 //      _navigationViews[_currentIndex].controller.forward();
+      appBar = appBars[index];
     });
+  }
+
+  Widget _buildTabBar() {
+    return TabBar(
+        indicatorColor: Colors.white,
+        controller: _tabController,
+        isScrollable: true,
+        tabs: <Tab>[
+          Tab(text: 'TOP250', icon: Icon(Icons.stars)),
+          Tab(text: '新片榜', icon: Icon(Icons.fiber_new)),
+          Tab(text: '北美票房榜', icon: Icon(Icons.monetization_on)),
+        ]);
   }
 
   @override
@@ -88,15 +120,15 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          new Flexible(flex: 1, child: MovieAppBar('MOVIE')),
+          new Flexible(flex: 1, child: appBar),
           new Flexible(
-              flex: 8,
+              flex: _currentIndex == 0 ? 6 : 8,
               child: new PageView(
                 physics: NeverScrollableScrollPhysics(),
                 controller: pageController,
                 onPageChanged: (index) => _switchBar(index),
                 children: <Widget>[
-                  Container(),
+                  new MovieSelectedPage(),
                   new MovieHomePage(),
                   Container(),
                 ],

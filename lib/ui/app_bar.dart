@@ -7,10 +7,19 @@ import 'package:flutter_movie/ui/movie_search.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 
 class MovieAppBar extends StatelessWidget {
-  final String title;
   final double barHeight = 40.0;
+  List<ColorSwatch> colors;
+  Widget centerWidget;
 
-  MovieAppBar(this.title);
+  MovieAppBar(this.colors,
+      {this.centerWidget = const Text(
+        'MOVIE',
+        style: const TextStyle(
+            color: Colors.white,
+            fontFamily: 'Popins',
+            fontSize: 26.0,
+            fontWeight: FontWeight.bold),
+      )});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +30,7 @@ class MovieAppBar extends StatelessWidget {
 //      height: barHeight + statusBarHeight,
         decoration: new BoxDecoration(
             gradient: new LinearGradient(
-                colors: [Colors.teal, Colors.tealAccent],
+                colors: colors,
                 begin: const FractionalOffset(0.0, 0.0),
                 end: const FractionalOffset(1.0, 0.0),
                 stops: [0.0, 1.0],
@@ -31,14 +40,7 @@ class MovieAppBar extends StatelessWidget {
             children: <Widget>[
               new Container(
                 alignment: Alignment.center,
-                child: new Text(
-                  title,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Popins',
-                      fontSize: 26.0,
-                      fontWeight: FontWeight.bold),
-                ),
+                child: centerWidget,
               ),
               new Container(
                   margin: const EdgeInsets.only(left: 12.0),

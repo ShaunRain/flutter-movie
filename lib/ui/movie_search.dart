@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/page/actor_detail_page.dart';
 import 'package:flutter_movie/page/movie_detail_page.dart';
+import 'package:flutter_movie/ui/poster.dart';
 import 'package:flutter_movie/ui/rating_info.dart';
 import 'package:material_search/material_search.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -13,26 +14,27 @@ class MovieSearchItem<T> extends MaterialSearchResult<T> {
 
   @override
   Widget build(BuildContext context) {
+    var poster = new Poster(
+        posterUrl: subject.images.medium,
+        posterHeight: 120.0,
+        posterWidth: 80.0,
+        movieId: subject.id);
+
     return new InkWell(
         onTap: () => Navigator.push(
             context,
             new MaterialPageRoute(
-                builder: (context) => new MovieDetailPage(subject.id,
-                    posterUrl: subject.images.medium))),
+                builder: (context) => new MovieDetailPage(
+                      subject.id,
+                      poster: poster,
+                    ))),
         child: Container(
           padding: const EdgeInsets.only(left: 12.0, top: 12.0, bottom: 12.0),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               new ClipRRect(
-                  borderRadius: new BorderRadius.circular(2.0),
-                  child: new FadeInImage.memoryNetwork(
-                      fadeInDuration: Duration(milliseconds: 200),
-                      placeholder: kTransparentImage,
-                      image: subject.images.small,
-                      width: 80.0,
-                      height: 120.0,
-                      fit: BoxFit.cover)),
+                  borderRadius: new BorderRadius.circular(2.0), child: poster),
               SizedBox(width: 12.0),
               Container(
                 constraints: BoxConstraints.expand(

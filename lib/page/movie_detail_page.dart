@@ -7,6 +7,7 @@ import 'package:flutter_movie/ui/movie_detail_header.dart';
 import 'package:flutter_movie/ui/photo_scroller.dart';
 import 'package:flutter_movie/ui/poster.dart';
 import 'package:flutter_movie/util/movie_api.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class MovieDetailPage extends StatefulWidget {
   String movieId;
@@ -51,7 +52,9 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
         children: <Widget>[
           Stack(
             children: <Widget>[
-              movieDetail != null ? MovieDetailHeader(movieDetail) : SizedBox(),
+              movieDetail != null
+                  ? MovieDetailHeader(movieDetail, widget.poster.imageProvider)
+                  : SizedBox(),
               Padding(
                 padding: const EdgeInsets.only(top: 190.0, left: 15.0),
                 child: widget.poster == null
@@ -61,7 +64,7 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         posterWidth: 126.0,
                         movieId: widget.movieId)
                     : widget.poster.reseize(height: 180.0, width: 126.0),
-              )
+              ),
             ],
           ),
           movieDetail != null

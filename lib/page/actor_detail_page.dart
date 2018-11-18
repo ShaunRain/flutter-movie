@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/animator/actor_detail_animation.dart';
+import 'package:flutter_movie/animator/actor_works_animation.dart';
 import 'package:flutter_movie/model/actor_detail.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/ui/expansion_text.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_movie/ui/movie_horizontal_scroller.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:ui' as ui;
-import 'package:logging/logging.dart';
 
 class ActorDetailPage extends StatefulWidget {
   String personId;
@@ -24,8 +24,10 @@ class ActorDetailPage extends StatefulWidget {
 
 class _ActorDetailPage extends State<ActorDetailPage>
     with TickerProviderStateMixin {
-  AnimationController animationController;
-  ActorDetailAnimation animation;
+  AnimationController detailController;
+  AnimationController worksController;
+  ActorDetailAnimation detailAnimation;
+  ActorWorksAnimation worksAnimation;
   ActorDetail actorDetail;
   List<Subject> actorWorks;
 
@@ -40,20 +42,22 @@ class _ActorDetailPage extends State<ActorDetailPage>
   void initState() {
     super.initState();
 
-    animationController = new AnimationController(
+    detailController = new AnimationController(
         vsync: this, duration: Duration(milliseconds: 2500));
-    animation = new ActorDetailAnimation(animationController);
+    worksController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1500));
+
+    detailAnimation = new ActorDetailAnimation(detailController);
+    worksAnimation = new ActorWorksAnimation(worksController);
 
     _getActorDetail();
     _getActorWorks(0, 10);
-
-    animationController.forward();
   }
 
   @override
   void dispose() {
     super.dispose();
-    animationController.dispose();
+    detailController.dispose();
   }
 
   Widget _buildAnimation(BuildContext context, Widget child) {
@@ -65,7 +69,7 @@ class _ActorDetailPage extends State<ActorDetailPage>
               ?
 //          Image(image: widget.avatar)
               Opacity(
-                  opacity: animation.backdropOpacity.value,
+                  opacity: detailAnimation.backdropOpacity.value,
                   child: FadeInImage.memoryNetwork(
                       fadeInDuration: Duration(milliseconds: 200),
                       placeholder: kTransparentImage,
@@ -75,8 +79,8 @@ class _ActorDetailPage extends State<ActorDetailPage>
           BackdropFilter(
               filter: ui.ImageFilter.blur(
 //                  sigmaX: 8.0, sigmaY: 8.0
-                  sigmaX: animation.backdropBlur.value,
-                  sigmaY: animation.backdropBlur.value),
+                  sigmaX: detailAnimation.backdropBlur.value,
+                  sigmaY: detailAnimation.backdropBlur.value),
               child: Container(
                 color: Colors.black.withOpacity(0.5),
               )),
@@ -94,7 +98,9 @@ class _ActorDetailPage extends State<ActorDetailPage>
 
     actorDetail = ActorDetail.fromJson(response.data);
 
-    setState(() {});
+    setState(() {
+      detailController.forward();
+    });
   }
 
   _getActorWorks(int start, int count) async {
@@ -132,7 +138,9 @@ class _ActorDetailPage extends State<ActorDetailPage>
 
     isRequest = false;
 
-    setState(() {});
+    setState(() {
+      worksController.forward();
+    });
   }
 
   Widget _buildWorks() {
@@ -151,25 +159,27 @@ class _ActorDetailPage extends State<ActorDetailPage>
         }
       });
 
-    return Transform(
-        transform: new Matrix4.translationValues(
-            animation.worksTranslationX.value, 0.0, 0.0),
-        child: Opacity(
-            opacity: animation.worksOpacity.value,
-            child: new MovieHorizontalScroller(
-              actorWorks,
-              title: "代表作品",
-              controller: _controller,
-              ratio: 0.7,
-              textColor: Colors.white,
-            )));
+    return new AnimatedBuilder(
+        animation: worksController,
+        builder: (context, child) => Transform(
+            transform: new Matrix4.translationValues(
+                worksAnimation.worksTranslationX.value, 0.0, 0.0),
+            child: Opacity(
+                opacity: worksAnimation.worksOpacity.value,
+                child: new MovieHorizontalScroller(
+                  actorWorks,
+                  title: "代表作品",
+                  controller: _controller,
+                  ratio: 0.7,
+                  textColor: Colors.white,
+                ))));
   }
 
   @override
   Widget build(BuildContext context) {
     top = MediaQuery.of(context).padding.top;
     return AnimatedBuilder(
-        animation: animationController, builder: _buildAnimation);
+        animation: detailController, builder: _buildAnimation);
   }
 
   Widget _buildContent() {
@@ -184,8 +194,10 @@ class _ActorDetailPage extends State<ActorDetailPage>
   Widget _buildAvatar() {
     return new Transform(
         alignment: Alignment.center,
-        transform: new Matrix4.diagonal3Values(animation.avatarAnimation.value,
-            animation.avatarAnimation.value, 1.0),
+        transform: new Matrix4.diagonal3Values(
+            detailAnimation.avatarAnimation.value,
+            detailAnimation.avatarAnimation.value,
+            1.0),
         child: Container(
           width: 120.0,
           height: 120.0,
@@ -216,16 +228,16 @@ class _ActorDetailPage extends State<ActorDetailPage>
           children: <Widget>[
             Text(actorDetail.name + '\n' + actorDetail.name_en,
                 style: TextStyle(
-                    color:
-                        Colors.white.withOpacity(animation.nameOpacity.value),
+                    color: Colors.white
+                        .withOpacity(detailAnimation.nameOpacity.value),
                     fontWeight: FontWeight.bold,
                     fontSize: 20.0)),
             SizedBox(height: 10.0),
             Text(
               actorDetail.born_place,
               style: TextStyle(
-                  color:
-                      Colors.white.withOpacity(animation.locationOpacity.value),
+                  color: Colors.white
+                      .withOpacity(detailAnimation.locationOpacity.value),
                   fontWeight: FontWeight.w500,
                   fontSize: 12.0),
             ),
@@ -233,7 +245,7 @@ class _ActorDetailPage extends State<ActorDetailPage>
               color: Colors.white.withOpacity(0.85),
               height: 1.0,
               margin: const EdgeInsets.symmetric(vertical: 16.0),
-              width: animation.dividerWidth.value,
+              width: detailAnimation.dividerWidth.value,
             ),
             Opacity(
               child: ExpansionText(actorDetail.summary,
@@ -244,10 +256,10 @@ class _ActorDetailPage extends State<ActorDetailPage>
                   textStyle: TextStyle(
                       height: 1.2,
                       color: Colors.white
-                          .withOpacity(animation.contentOpacity.value),
+                          .withOpacity(detailAnimation.contentOpacity.value),
                       fontWeight: FontWeight.w400,
                       fontSize: 14.0)),
-              opacity: animation.contentOpacity.value,
+              opacity: detailAnimation.contentOpacity.value,
             )
           ],
         ));

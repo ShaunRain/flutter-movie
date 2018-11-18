@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/ui/video_card.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:video_player/video_player.dart';
 
@@ -7,8 +8,10 @@ class ArcBanner extends StatefulWidget {
   String bannerImage;
   String videoUrl;
   String videoTitle;
+  ImageProvider imageProvider;
 
-  ArcBanner({this.bannerImage, this.videoUrl, this.videoTitle});
+  ArcBanner(
+      {this.bannerImage, this.videoUrl, this.videoTitle, this.imageProvider});
 
   @override
   _ArcBannerState createState() => _ArcBannerState();
@@ -16,6 +19,19 @@ class ArcBanner extends StatefulWidget {
 
 class _ArcBannerState extends State<ArcBanner> {
   VideoPlayerController _controller;
+  bool isPlaying;
+  PaletteGenerator paletteGenerator;
+
+  _generatePaletteButton() async {
+    paletteGenerator = await PaletteGenerator.fromImageProvider(
+        widget.imageProvider,
+        size: Size(80.0, 80.0),
+        region: Offset.zero & Size(80.0, 80.0));
+
+    print(paletteGenerator.dominantColor);
+
+    setState(() {});
+  }
 
   void _initVideo() async {
     _controller = VideoPlayerController.network(widget.videoUrl)
@@ -28,8 +44,10 @@ class _ArcBannerState extends State<ArcBanner> {
 
   @override
   void initState() {
-    if (widget.videoUrl != null) {
-      _initVideo();
+    isPlaying = false;
+
+    if (widget.videoUrl != null && widget.videoUrl.isNotEmpty) {
+      _generatePaletteButton();
     }
 
     if (mounted) {
@@ -40,8 +58,20 @@ class _ArcBannerState extends State<ArcBanner> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    if (_controller != null) {
+      _controller.dispose();
+    }
     super.dispose();
+  }
+
+  void _togglePlay() {
+    setState(() {
+      isPlaying = !isPlaying;
+
+      if (isPlaying && widget.videoUrl != null) {
+        _initVideo();
+      }
+    });
   }
 
   @override
@@ -52,7 +82,7 @@ class _ArcBannerState extends State<ArcBanner> {
       children: <Widget>[
         ClipPath(
             clipper: new ArcClipper(),
-            child: widget.videoUrl != null
+            child: isPlaying
                 ? VideoCard(
                     aspectRatio: screenWidth / 230.0,
                     title: widget.videoTitle,
@@ -63,7 +93,22 @@ class _ArcBannerState extends State<ArcBanner> {
                     image: widget.bannerImage,
                     width: screenWidth,
                     height: 230.0,
-                    fit: BoxFit.cover))
+                    fit: BoxFit.cover)),
+        paletteGenerator != null && widget.videoUrl != null
+            ? Positioned(
+                top: 150.0,
+                left: MediaQuery.of(context).size.width * 0.8,
+                child: FloatingActionButton(
+                  child: Icon(
+                    isPlaying ? Icons.videocam_off : Icons.videocam,
+                    color: Colors.white,
+                    size: 35.0,
+                  ),
+                  onPressed: () => _togglePlay(),
+                  shape: CircleBorder(),
+                  backgroundColor: paletteGenerator.dominantColor.color,
+                ))
+            : Container()
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/subject.dart';
 import 'package:flutter_movie/page/movie_detail_page.dart';
 import 'package:flutter_movie/ui/poster.dart';
+import 'package:flutter_movie/ui/rating_info.dart';
 
 class MovieHorizontalScroller extends StatelessWidget {
   final List<Subject> movieInfos;
@@ -49,21 +50,26 @@ class MovieHorizontalScroller extends StatelessWidget {
                 width: 160.0 * ratio,
               ),
               SizedBox(height: 6.0 * ratio),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  new Text("Ratings",
-                      style: TextStyle(
-                          color: textColor, fontWeight: FontWeight.w200)),
-                  SizedBox(width: 4.0 * ratio),
-                  new Text(
-                    (info.rating.average * 1.0).toString(),
-                    style: TextStyle(
-                        color: Colors.redAccent, fontWeight: FontWeight.w200),
-                  ),
-                ],
+              RatingInfo(
+                info.rating,
+                showText: false,
+                ratio: ratio * 0.8,
               )
+//              Row(
+//                crossAxisAlignment: CrossAxisAlignment.center,
+//                mainAxisAlignment: MainAxisAlignment.start,
+//                children: <Widget>[
+//                  new Text("Ratings",
+//                      style: TextStyle(
+//                          color: textColor, fontWeight: FontWeight.w200)),
+//                  SizedBox(width: 4.0 * ratio),
+//                  new Text(
+//                    (info.rating.average * 1.0).toString(),
+//                    style: TextStyle(
+//                        color: Colors.redAccent, fontWeight: FontWeight.w200),
+//                  ),
+//                ],
+//              )
             ]));
   }
 

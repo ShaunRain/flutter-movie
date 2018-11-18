@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/movie_detail.dart';
 import 'package:flutter_movie/ui/arc_banner.dart';
@@ -5,8 +7,9 @@ import 'package:flutter_movie/ui/rating_info.dart';
 
 class MovieDetailHeader extends StatelessWidget {
   final MovieDetail movieDetail;
+  ImageProvider imageProvider;
 
-  MovieDetailHeader(this.movieDetail);
+  MovieDetailHeader(this.movieDetail, this.imageProvider);
 
   Widget _buildTypeChips(TextTheme textTheme) {
     return new SingleChildScrollView(
@@ -44,9 +47,15 @@ class MovieDetailHeader extends StatelessWidget {
         Padding(
             padding: const EdgeInsets.only(bottom: 140.0),
             child: new ArcBanner(
-              bannerImage: movieDetail.photos[0].image,
-              videoUrl: movieDetail.trailer_urls[0],
+              bannerImage: movieDetail
+                  .photos[Random().nextInt(movieDetail.photos.length - 1) + 1]
+                  .image,
+              videoUrl: movieDetail.trailer_urls != null &&
+                      movieDetail.trailer_urls.length > 0
+                  ? movieDetail.trailer_urls[0]
+                  : "",
               videoTitle: "${movieDetail.title}(预告片)",
+              imageProvider: imageProvider,
             )),
         Positioned(
           bottom: 0.0,

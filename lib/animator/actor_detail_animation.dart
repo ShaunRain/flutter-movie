@@ -11,8 +11,6 @@ class ActorDetailAnimation {
   final Animation<double> locationOpacity;
   final Animation<double> dividerWidth;
   final Animation<double> contentOpacity;
-  final Animation<double> worksOpacity;
-  final Animation<double> worksTranslationX;
 
   ActorDetailAnimation(this.controller)
       : avatarAnimation = new Tween(begin: 0.7, end: 1.0).animate(
@@ -48,13 +46,5 @@ class ActorDetailAnimation {
         contentOpacity = new Tween(begin: 0.0, end: 1.0).animate(
             new CurvedAnimation(
                 parent: controller,
-                curve: new Interval(0.7, 0.95, curve: Curves.easeIn))),
-        worksOpacity = new Tween(begin: 0.0, end: 1.0).animate(
-            new CurvedAnimation(
-                parent: controller,
-                curve: new Interval(0.75, 1.0, curve: Curves.easeIn))),
-        worksTranslationX = new Tween(begin: 100.0, end: 0.0).animate(
-            new CurvedAnimation(
-                parent: controller,
-                curve: new Interval(0.75, 1.0, curve: Curves.ease)));
+                curve: new Interval(0.7, 0.95, curve: Curves.easeIn)));
 }

@@ -7,13 +7,18 @@ class Poster extends StatefulWidget {
   double posterWidth;
   final String movieId;
   String source;
+  ImageProvider _imageProvider;
+  double posterRadius;
+
+  ImageProvider get imageProvider => _imageProvider;
 
   Poster(
       {this.posterUrl,
       this.posterHeight,
       this.posterWidth,
       this.movieId,
-      this.source = " "});
+      this.source = " ",
+      this.posterRadius = 4.0});
 
 //  Poster copyWith({double height, double width}) {
 //    return Poster(
@@ -25,9 +30,10 @@ class Poster extends StatefulWidget {
     return new _PosterState();
   }
 
-  Poster reseize({double height, double width}) {
+  Poster reseize({double height, double width, double radius}) {
     posterHeight = height ?? posterHeight;
     posterWidth = width ?? posterWidth;
+    radius = radius ?? posterRadius;
     return this;
   }
 }
@@ -35,16 +41,20 @@ class Poster extends StatefulWidget {
 class _PosterState extends State<Poster> {
   @override
   Widget build(BuildContext context) {
+    var image = new FadeInImage.memoryNetwork(
+        fadeInDuration: Duration(milliseconds: 200),
+        placeholder: kTransparentImage,
+        image: widget.posterUrl,
+        width: widget.posterWidth,
+        height: widget.posterHeight,
+        fit: BoxFit.cover);
+
+    widget._imageProvider = image.image;
+
     return Hero(
         tag: 'poster-hero-${widget.movieId + widget.source}',
         child: new ClipRRect(
-            borderRadius: new BorderRadius.circular(4.0),
-            child: new FadeInImage.memoryNetwork(
-                fadeInDuration: Duration(milliseconds: 200),
-                placeholder: kTransparentImage,
-                image: widget.posterUrl,
-                width: widget.posterWidth,
-                height: widget.posterHeight,
-                fit: BoxFit.cover)));
+            borderRadius: new BorderRadius.circular(widget.posterRadius),
+            child: image));
   }
 }

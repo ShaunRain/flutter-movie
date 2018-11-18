@@ -16,4 +16,6 @@ class MovieApi {
   static final String MOVIE_WEEKLY_API =
       "https://api.douban.com/v2/movie/weekly";
 
+  static final String MOVIE_TOP250 =
+      "https://api.douban.com/v2/movie/top250";
 }

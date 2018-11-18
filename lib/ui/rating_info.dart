@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_movie/model/movie_detail.dart';
 import 'package:flutter_movie/model/rating.dart';
 
 class RatingInfo extends StatelessWidget {
   Rating rating;
   bool showText;
+  double ratio;
+  Color color;
 
-  RatingInfo(this.rating, {this.showText = true});
+  RatingInfo(this.rating, {this.showText = true, this.ratio = 1.0, this.color = Colors.redAccent});
 
   Widget _buildStars() {
     var stars = <Widget>[];
@@ -24,7 +25,8 @@ class RatingInfo extends StatelessWidget {
 
       stars.add(new Icon(
         iconData,
-        color: Colors.redAccent,
+        size: 24.0 * ratio,
+        color: color,
       ));
     }
 
@@ -82,13 +84,13 @@ class RatingInfo extends StatelessWidget {
         new Text(
           (rating.average * 1.0).toString(),
           style: TextStyle(
-              color: Colors.redAccent,
+              color: color,
               fontWeight: FontWeight.w600,
-              fontSize: 22.0),
+              fontSize: 22.0 * ratio),
         ),
         showText
             ? Padding(
-                padding: const EdgeInsets.only(top: 4.0),
+                padding: EdgeInsets.only(top: 4.0 * ratio),
                 child: new Text("Ratings",
                     style: TextStyle(
                         color: Colors.black45, fontWeight: FontWeight.w200)))
@@ -115,13 +117,13 @@ class RatingInfo extends StatelessWidget {
     if (rating.average == 0.0) {
       return new Text('暂无评分',
           style:
-              TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600));
+              TextStyle(color: color, fontWeight: FontWeight.w600));
     }
 
     return new Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[numRating, SizedBox(width: 16.0), starRating],
+      children: <Widget>[numRating, SizedBox(width: 16.0 * ratio), starRating],
     );
   }
 }
