@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_movie/model/cast.dart';
 import 'package:flutter_movie/model/movie_detail.dart';
 import 'package:flutter_movie/page/actor_detail_page.dart';
+import 'package:flutter_movie/util/movie_api.dart';
 import 'package:path/path.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -11,8 +12,9 @@ class CastScroller extends StatelessWidget {
   CastScroller(this.actors);
 
   Widget _buildCast(BuildContext context, Cast cast) {
-    ImageProvider avatarImg = NetworkImage(
-        cast.avatars.medium);
+    print(cast.avatars);
+
+    ImageProvider avatarImg = NetworkImage(cast.avatars?.medium ?? MovieApi.DEFAULT_AVATRT);
 
     return Padding(
       padding: const EdgeInsets.only(right: 18.0),
@@ -35,7 +37,7 @@ class CastScroller extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Text(
-                cast.name_en,
+                cast.name,
                 softWrap: true,
               ),
             ),

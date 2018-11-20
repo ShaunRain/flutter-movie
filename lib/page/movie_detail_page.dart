@@ -87,8 +87,11 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                         .map((photo) => photo.thumb)
                         .toList()),
                     SizedBox(height: 20.0),
-                    CastScroller(movieDetail.casts),
-                    SizedBox(height: 20.0),
+                    movieDetail.casts != null && movieDetail.casts.isNotEmpty
+                        ? Padding(
+                            padding: const EdgeInsets.only(bottom: 20.0),
+                            child: CastScroller(movieDetail.casts))
+                        : Container(),
                   ],
                 )
               : SizedBox(),

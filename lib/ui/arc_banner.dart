@@ -28,7 +28,7 @@ class _ArcBannerState extends State<ArcBanner> {
         size: Size(80.0, 80.0),
         region: Offset.zero & Size(80.0, 80.0));
 
-    print(paletteGenerator.dominantColor);
+    print(paletteGenerator);
 
     setState(() {});
   }
@@ -106,7 +106,7 @@ class _ArcBannerState extends State<ArcBanner> {
                   ),
                   onPressed: () => _togglePlay(),
                   shape: CircleBorder(),
-                  backgroundColor: paletteGenerator.dominantColor.color,
+                  backgroundColor: paletteGenerator.dominantColor?.color ?? Colors.teal,
                 ))
             : Container()
       ],

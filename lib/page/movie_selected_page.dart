@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_movie/animator/blur_cover_transition_animation.dart';
 import 'package:flutter_movie/model/short_comment.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_movie/model/subject.dart';
@@ -24,8 +25,12 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
 
   bool loading;
   String selectedCover;
+  String nextSelectedCover;
 
   int currentIndex;
+
+  AnimationController _controller;
+  BlurCoverTransitionAnimation blurAnimation;
 
   void _getSelectedMovies() async {
     Response response = await new Dio().get(MovieApi.MOVIE_TOP250 +
@@ -52,14 +57,27 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
     currentIndex = index;
 
     if (selectedMovies != null && selectedMovies.length > index) {
-      selectedCover = selectedMovies[index].images.medium;
+//      selectedCover = selectedMovies[index].images.medium;
 
       if (!commentMap.containsKey(index)) {
         _getShortComments(index);
       }
     }
 
-    setState(() {});
+    setState(() {
+      if (blurAnimation.fadeIn.isCompleted ||
+          blurAnimation.fadeOut.isCompleted) {
+        selectedCover = selectedMovies[index].images.medium;
+//        nextSelectedCover = selectedMovies[index].images.medium;
+        _controller.reverse();
+        print('reverse');
+      } else {
+//        selectedCover = selectedMovies[index].images.medium;
+        nextSelectedCover = selectedMovies[index].images.medium;
+        _controller.forward();
+        print('forward');
+      }
+    });
   }
 
   void _getShortComments(int index) async {
@@ -81,13 +99,18 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
     loading = true;
     currentIndex = 0;
 
+    _controller = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+
+    blurAnimation = BlurCoverTransitionAnimation(_controller);
+
     _getSelectedMovies();
     super.initState();
   }
 
   Widget _buildPageItem(
       BuildContext context, int index, PageVisibility pageVisibility) {
-//    print('index${index}/pagePosition${pageVisibility.pagePosition}');
+//    print('index${index}/ pagePosition${pageVisibility.pagePosition.abs()}');
 
     Subject subject = selectedMovies[index];
 
@@ -197,14 +220,31 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        selectedCover != null
-            ? FadeInImage.memoryNetwork(
-                fadeInDuration: Duration(milliseconds: 200),
-                placeholder: kTransparentImage,
-                image: selectedCover,
-                imageScale: 1.0,
-                fit: BoxFit.cover)
-            : SizedBox(),
+        AnimatedBuilder(
+            animation: _controller,
+            builder: (context, widget) =>
+                Stack(fit: StackFit.expand, children: <Widget>[
+                  selectedCover != null
+                      ? Opacity(
+                          opacity: blurAnimation.fadeOut.value,
+                          child: FadeInImage.memoryNetwork(
+                              fadeInDuration: Duration(milliseconds: 200),
+                              placeholder: kTransparentImage,
+                              image: selectedCover,
+                              imageScale: 1.0,
+                              fit: BoxFit.cover))
+                      : Container(),
+                  nextSelectedCover != null
+                      ? Opacity(
+                          opacity: blurAnimation.fadeIn.value,
+                          child: FadeInImage.memoryNetwork(
+                              fadeInDuration: Duration(milliseconds: 200),
+                              placeholder: kTransparentImage,
+                              image: nextSelectedCover,
+                              imageScale: 1.0,
+                              fit: BoxFit.cover))
+                      : Container()
+                ])),
         BackdropFilter(
             filter: ui.ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
             child: Container(color: Colors.white.withOpacity(0.2))),
