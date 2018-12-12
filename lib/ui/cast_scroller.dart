@@ -12,9 +12,8 @@ class CastScroller extends StatelessWidget {
   CastScroller(this.actors);
 
   Widget _buildCast(BuildContext context, Cast cast) {
-    print(cast.avatars);
-
-    ImageProvider avatarImg = NetworkImage(cast.avatars?.medium ?? MovieApi.DEFAULT_AVATRT);
+    ImageProvider avatarImg =
+        NetworkImage(cast.avatars?.medium ?? MovieApi.DEFAULT_AVATRT);
 
     return Padding(
       padding: const EdgeInsets.only(right: 18.0),
@@ -55,12 +54,11 @@ class CastScroller extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Text(
-            'The cast',
-            style: textTheme.subhead.copyWith(fontSize: 18.0),
-          ),
-        ),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Text(
+              'The cast',
+              style: textTheme.subhead.copyWith(fontSize: 18.0),
+            )),
         SizedBox.fromSize(
           size: const Size.fromHeight(120.0),
           child: new ListView.builder(

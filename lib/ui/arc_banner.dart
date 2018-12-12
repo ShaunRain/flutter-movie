@@ -106,7 +106,7 @@ class _ArcBannerState extends State<ArcBanner> {
                   ),
                   onPressed: () => _togglePlay(),
                   shape: CircleBorder(),
-                  backgroundColor: paletteGenerator.dominantColor?.color ?? Colors.teal,
+                  backgroundColor: paletteGenerator.dominantColor?.color ?? Colors.white70,
                 ))
             : Container()
       ],

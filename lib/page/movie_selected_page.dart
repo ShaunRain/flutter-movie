@@ -1,8 +1,9 @@
+import 'dart:async';
 import 'dart:math';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_movie/animator/blur_cover_transition_animation.dart';
+import 'package:flutter_movie/animator/scroll_in_animation.dart';
 import 'package:flutter_movie/model/short_comment.dart';
 import 'dart:ui' as ui;
 import 'package:flutter_movie/model/subject.dart';
@@ -20,41 +21,113 @@ class MovieSelectedPage extends StatefulWidget {
 
 class _MovieSelectedPageState extends State<MovieSelectedPage>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  List<Subject> selectedMovies;
+  List<Subject> selectedMovies = [];
   Map<int, List<ShortComment>> commentMap = new Map();
 
   bool loading;
+  bool pageMounted = false;
+  bool isSelectedPageEnd = false;
+
   String selectedCover;
   String nextSelectedCover;
 
-  int currentIndex;
+  int currentIndex = 0;
 
   AnimationController _controller;
   BlurCoverTransitionAnimation blurAnimation;
 
-  void _getSelectedMovies() async {
-    Response response = await new Dio().get(MovieApi.MOVIE_TOP250 +
-        '?apikey=${MovieApi.DOUBAN_API_KEY}&start=${Random().nextInt(81)}&count=20');
+  List<Timer> timers = [];
 
-    selectedMovies = response.data['subjects']
+  PageController _selectedPageController;
+
+  List<int> startPoints = [];
+  int currentPoint = 0;
+
+  final int pageSize = 10;
+
+  @override
+  void initState() {
+    for (int i = 0; i < 250; i += 20) {
+      startPoints.add(i);
+    }
+
+    startPoints.shuffle();
+
+    loading = true;
+
+    _controller = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 1000));
+
+    blurAnimation = BlurCoverTransitionAnimation(_controller);
+
+    _selectedPageController = PageController(
+      viewportFraction: 0.85,
+    );
+
+    _selectedPageController.addListener(() {
+      if (_selectedPageController.offset ==
+              _selectedPageController.position.maxScrollExtent &&
+          pageMounted) {
+        _getSelectedMovies();
+      }
+    });
+
+    _getSelectedMovies();
+    super.initState();
+  }
+
+  void _getSelectedMovies() async {
+    if (isSelectedPageEnd) {
+      return;
+    }
+
+    Response response = await new Dio().get(MovieApi.MOVIE_TOP250 +
+        '?apikey=${MovieApi.DOUBAN_API_KEY}&start=${startPoints[currentPoint++]}&count=${pageSize}');
+
+    List<Subject> results = response.data['subjects']
         .map((json) => Subject.fromJson(json))
         .toList()
         .cast<Subject>();
 
-    selectedMovies.shuffle();
+    if (results.isEmpty) {
+      setState(() {
+        isSelectedPageEnd = true;
+      });
+      return;
+    }
+    results.shuffle();
+
+    selectedMovies.addAll(results);
 
     setState(() {
       loading = false;
-      if (selectedMovies != null && selectedMovies.length > 0) {
-        selectedCover = selectedMovies[0].images.medium;
 
+      if (currentPoint == 1) {
+        selectedCover = selectedMovies[0].images.medium;
         _getShortComments(0);
+      } else {
+        selectedCover =
+            selectedMovies[_selectedPageController.page.toInt()].images.medium;
+        _getShortComments(_selectedPageController.page.toInt());
       }
     });
   }
 
+  @override
+  void dispose() {
+//    commentsAutoTimer.cancel();
+    for (var timer in timers) {
+      timer.cancel();
+    }
+    super.dispose();
+  }
+
   void _onPageChanged(int index) {
     currentIndex = index;
+
+    if (index >= selectedMovies.length) {
+      return;
+    }
 
     if (selectedMovies != null && selectedMovies.length > index) {
 //      selectedCover = selectedMovies[index].images.medium;
@@ -68,14 +141,12 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
       if (blurAnimation.fadeIn.isCompleted ||
           blurAnimation.fadeOut.isCompleted) {
         selectedCover = selectedMovies[index].images.medium;
-//        nextSelectedCover = selectedMovies[index].images.medium;
         _controller.reverse();
-        print('reverse');
+//        print('reverse');
       } else {
-//        selectedCover = selectedMovies[index].images.medium;
         nextSelectedCover = selectedMovies[index].images.medium;
         _controller.forward();
-        print('forward');
+//        print('forward');
       }
     });
   }
@@ -94,23 +165,17 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
     setState(() {});
   }
 
-  @override
-  void initState() {
-    loading = true;
-    currentIndex = 0;
-
-    _controller = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1000));
-
-    blurAnimation = BlurCoverTransitionAnimation(_controller);
-
-    _getSelectedMovies();
-    super.initState();
-  }
-
   Widget _buildPageItem(
       BuildContext context, int index, PageVisibility pageVisibility) {
 //    print('index${index}/ pagePosition${pageVisibility.pagePosition.abs()}');
+
+    if (selectedMovies.length > 0 && index == selectedMovies.length) {
+      return !isSelectedPageEnd && pageMounted
+          ? Center(
+              child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation(Colors.amber)))
+          : Container();
+    }
 
     Subject subject = selectedMovies[index];
 
@@ -121,28 +186,50 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
         posterWidth: MediaQuery.of(context).size.width * 0.8,
         posterHeight: MediaQuery.of(context).size.width * 0.8 * 1.4);
 
+    var commentsPageView;
+
+    if (commentMap.containsKey(index)) {
+      commentsPageView = PageView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          controller: PageController(initialPage: 0),
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, _index) => ShortCommentView(
+              commentMap[index][_index % commentMap[index].length]));
+
+      timers.add(Timer.periodic(Duration(milliseconds: 3000), (timer) {
+        try {
+          PageController pageController = commentsPageView?.controller;
+          if (pageController.positions.isNotEmpty) {
+            pageController.nextPage(
+                duration: Duration(milliseconds: 400), curve: Curves.easeIn);
+          }
+        } catch (e) {
+          print(e);
+        }
+      }));
+    }
+
     return Stack(
       children: <Widget>[
         Container(
           alignment: FractionalOffset(
-              0.25, 0.95 - (0.1 * pageVisibility.pagePosition.abs())),
+              0.25, 0.85 - (0.2 * pageVisibility.pagePosition.abs())),
           child: Card(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.0)),
             elevation: 4.0,
             child: Container(
+                alignment: Alignment.bottomCenter,
                 height: 120.0,
                 decoration: BoxDecoration(
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(12.0)),
                 width: MediaQuery.of(context).size.width * 0.75,
                 child: commentMap.containsKey(currentIndex)
-                    ? Stack(
+                    ? Container(
+                        height: 50.0,
                         alignment: Alignment.bottomCenter,
-                        children: <Widget>[
-                          ShortCommentView(commentMap[currentIndex][0])
-                        ],
-                      )
+                        child: commentsPageView)
                     : Container()),
           ),
         ),
@@ -158,16 +245,6 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0)),
                 elevation: 4.0,
-//            decoration: BoxDecoration(
-//                shape: BoxShape.rectangle,
-//                borderRadius: BorderRadius.circular(8.0),
-//                boxShadow: [
-//                  BoxShadow(
-//                      color: Colors.grey,
-//                      blurRadius: 2.0,
-//                      offset: Offset.zero,
-//                      spreadRadius: 2.0)
-//                ]),
                 margin: const EdgeInsets.symmetric(vertical: 10.0),
                 child: Stack(
                   alignment: Alignment.bottomCenter,
@@ -208,6 +285,38 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
                                 color: Colors.amberAccent,
                               ),
                               SizedBox(height: 6.0),
+                              Row(children: <Widget>[
+                                Icon(Icons.alarm, color: Colors.white),
+                                SizedBox(width: 4.0),
+                                Text(' ${subject.durations[0]}',
+                                    style: TextStyle(color: Colors.white)),
+                                SizedBox(width: 18.0),
+                                Row(
+                                  children: subject.genres
+                                      .sublist(0, min(3, subject.genres.length))
+                                      .map((genre) => Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 2.0, horizontal: 8.0),
+                                            margin: const EdgeInsets.only(
+                                                left: 8.0),
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.rectangle,
+                                                borderRadius:
+                                                    BorderRadius.circular(16.0),
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 1.0)),
+                                            child: Text(
+                                              genre,
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12.0),
+                                            ),
+                                          ))
+                                      .toList()
+                                      .cast<Widget>(),
+                                ),
+                              ]),
                             ]))
                   ],
                 ))),
@@ -246,23 +355,36 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
                       : Container()
                 ])),
         BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 6.0, sigmaY: 6.0),
+            filter: ui.ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
             child: Container(color: Colors.white.withOpacity(0.2))),
-        selectedMovies != null
-            ? Padding(
-                padding: const EdgeInsets.only(top: 15.0),
-                child: PageTransformer(pageViewBuilder: (visibilityResolver) {
-                  return PageView.builder(
-                      onPageChanged: (index) => _onPageChanged(index),
-                      controller: PageController(
-                        viewportFraction: 0.85,
-                      ),
-                      itemCount: selectedMovies.length,
-                      itemBuilder: (context, index) => _buildPageItem(
-                          context,
-                          index,
-                          visibilityResolver.resolvePageVisibility(index)));
-                }))
+        selectedMovies.isNotEmpty
+            ? ScrollInAnimation(
+                statusListener: (status) {
+                  if (AnimationStatus.completed == status) {
+                    setState(() {
+                      pageMounted = true;
+                    });
+                  }
+                },
+                duration: Duration(milliseconds: 800),
+                child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.75,
+                      child: PageTransformer(
+                          pageViewBuilder: (visibilityResolver) {
+                        return PageView.builder(
+                            onPageChanged: (index) => _onPageChanged(index),
+                            controller: _selectedPageController,
+                            itemCount: selectedMovies.length + 1,
+                            itemBuilder: (context, index) => _buildPageItem(
+                                context,
+                                index,
+                                visibilityResolver
+                                    .resolvePageVisibility(index)));
+                      }),
+                    )),
+              )
             : Container(),
         Center(
           child: new Opacity(
@@ -294,7 +416,7 @@ class ShortCommentView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8.0),
+        padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
         child: Row(
           children: <Widget>[
             Flexible(

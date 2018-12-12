@@ -28,7 +28,7 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
 
     appBars = [
       MovieAppBar([Colors.amber, Colors.amberAccent],
-          centerWidget: _buildTabBar()),
+          centerWidget: _buildTabBar(), showSearch: false),
       MovieAppBar([Colors.teal, Colors.tealAccent]),
       MovieAppBar([Colors.lightBlue, Colors.lightBlueAccent])
     ];

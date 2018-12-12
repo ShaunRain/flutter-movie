@@ -18,6 +18,10 @@ class MovieApi {
 
   static final String MOVIE_TOP250 = "https://api.douban.com/v2/movie/top250";
 
+  static final String MOVIE_NEW = "https://api.douban.com/v2/movie/new_movies";
+
+  static final String MOVIE_USBOX = "https://api.douban.com/v2/movie/us_box";
+
   static final String DEFAULT_AVATRT =
       "http://img7.doubanio.com/f/movie/63acc16ca6309ef191f0378faf793d1096a3e606/pics/movie/celebrity-default-large.png";
 }

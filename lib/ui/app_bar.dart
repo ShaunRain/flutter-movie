@@ -10,6 +10,7 @@ class MovieAppBar extends StatelessWidget {
   final double barHeight = 40.0;
   List<ColorSwatch> colors;
   Widget centerWidget;
+  bool showSearch;
 
   MovieAppBar(this.colors,
       {this.centerWidget = const Text(
@@ -19,7 +20,8 @@ class MovieAppBar extends StatelessWidget {
             fontFamily: 'Popins',
             fontSize: 26.0,
             fontWeight: FontWeight.bold),
-      )});
+      ),
+      this.showSearch = true});
 
   @override
   Widget build(BuildContext context) {
@@ -42,22 +44,24 @@ class MovieAppBar extends StatelessWidget {
                 alignment: Alignment.center,
                 child: centerWidget,
               ),
-              new Container(
-                  margin: const EdgeInsets.only(left: 12.0),
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 28.0,
-                      ),
-                      onPressed: () => Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder: (_, __, ___) =>
-                                  new MovieSearchPage()))
+              showSearch
+                  ? new Container(
+                      margin: const EdgeInsets.only(left: 12.0),
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                          icon: Icon(
+                            Icons.search,
+                            color: Colors.white,
+                            size: 28.0,
+                          ),
+                          onPressed: () => Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder: (_, __, ___) =>
+                                      new MovieSearchPage()))
 //                        () => showSearch(context: context, delegate: _MovieSearchDelegate()),
-                      ))
+                          ))
+                  : Container()
             ],
           ),
         ));

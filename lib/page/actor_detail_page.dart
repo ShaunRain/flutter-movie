@@ -43,9 +43,9 @@ class _ActorDetailPage extends State<ActorDetailPage>
     super.initState();
 
     detailController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 2500));
+        vsync: this, duration: Duration(milliseconds: 2000));
     worksController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 1500));
+        vsync: this, duration: Duration(milliseconds: 5000));
 
     detailAnimation = new ActorDetailAnimation(detailController);
     worksAnimation = new ActorWorksAnimation(worksController);
@@ -58,6 +58,7 @@ class _ActorDetailPage extends State<ActorDetailPage>
   void dispose() {
     super.dispose();
     detailController.dispose();
+    worksController.dispose();
   }
 
   Widget _buildAnimation(BuildContext context, Widget child) {
