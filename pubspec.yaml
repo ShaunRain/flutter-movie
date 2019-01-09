@@ -27,6 +27,7 @@ dependencies:
   video_player: ^0.7.2
   material_search: ^0.2.8
   palette_generator: ^0.1.1
+  local_auth: ^0.3.1
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +61,9 @@ flutter:
       - assets/img5.jpg
       - assets/img6.jpg
       - assets/img7.jpg
+      - assets/welcome0.png
+      - assets/welcome1.png
+      - assets/welcome2.png
 
   fonts:
       - family: Poppins
