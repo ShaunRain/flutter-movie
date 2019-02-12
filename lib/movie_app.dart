@@ -3,6 +3,7 @@ import 'package:flutter_movie/page/movie_home_page.dart';
 import 'package:flutter_movie/page/movie_selected_page.dart';
 import 'package:flutter_movie/ui/app_bar.dart';
 import 'package:flutter_movie/ui/bottom_navigation.dart';
+import 'package:flutter_movie/ui/tinder_swap_card.dart';
 
 class MovieApp extends StatefulWidget {
   @override
@@ -20,6 +21,15 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
   TabController _tabController;
 
   MovieAppBar appBar;
+
+  List<String> welcomeImages = [
+    "assets/welcome0.png",
+    "assets/welcome1.png",
+    "assets/welcome2.png",
+    "assets/welcome2.png",
+    "assets/welcome1.png",
+    "assets/welcome1.png"
+  ];
 
   @override
   void initState() {
@@ -130,7 +140,26 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
                 children: <Widget>[
                   new MovieSelectedPage(),
                   new MovieHomePage(),
-                  Container(),
+                  new Scaffold(
+                    body: Center(
+                        child: Container(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            child: new TinderSwapCard(
+                              orientation: AmassOrientation.BOTTOM,
+                              totalNum: 6,
+                              stackNum: 3,
+                              maxWidth: MediaQuery.of(context).size.width * 0.9,
+                              maxHeight:
+                                  MediaQuery.of(context).size.width * 0.9,
+                              minWidth: MediaQuery.of(context).size.width * 0.8,
+                              minHeight:
+                                  MediaQuery.of(context).size.width * 0.8,
+                              cardBuilder: (context, index) => Card(
+                                    child:
+                                        Image.asset('${welcomeImages[index]}'),
+                                  ),
+                            ))),
+                  ),
                 ],
               )),
         ],
