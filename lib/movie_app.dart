@@ -4,6 +4,8 @@ import 'package:flutter_movie/page/movie_selected_page.dart';
 import 'package:flutter_movie/ui/app_bar.dart';
 import 'package:flutter_movie/ui/bottom_navigation.dart';
 import 'package:flutter_movie/ui/tinder_swap_card.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_movie/util/event_bus.dart';
 
 class MovieApp extends StatefulWidget {
   @override
@@ -31,10 +33,18 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
     "assets/welcome1.png"
   ];
 
+  DateTime _lastBackTime;
+  int _currentSelectedTab = 0;
+
   @override
   void initState() {
     super.initState();
     _tabController = new TabController(length: 3, vsync: this);
+
+    _tabController.addListener(() {
+//        _currentSelectedTab = _tabController.index;
+      bus.emit("selected_tab", _tabController.index);
+    });
 
     appBars = [
       MovieAppBar([Colors.amber, Colors.amberAccent],
@@ -127,43 +137,61 @@ class _MovieAppState extends State<MovieApp> with TickerProviderStateMixin {
         });
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          new Flexible(flex: 1, child: appBar),
-          new Flexible(
-              flex: _currentIndex == 0 ? 6 : 8,
-              child: new PageView(
-                physics: NeverScrollableScrollPhysics(),
-                controller: pageController,
-                onPageChanged: (index) => _switchBar(index),
-                children: <Widget>[
-                  new MovieSelectedPage(),
-                  new MovieHomePage(),
-                  new Scaffold(
-                    body: Center(
-                        child: Container(
-                            height: MediaQuery.of(context).size.height * 0.6,
-                            child: new TinderSwapCard(
-                              orientation: AmassOrientation.BOTTOM,
-                              totalNum: 6,
-                              stackNum: 3,
-                              maxWidth: MediaQuery.of(context).size.width * 0.9,
-                              maxHeight:
-                                  MediaQuery.of(context).size.width * 0.9,
-                              minWidth: MediaQuery.of(context).size.width * 0.8,
-                              minHeight:
-                                  MediaQuery.of(context).size.width * 0.8,
-                              cardBuilder: (context, index) => Card(
-                                    child:
-                                        Image.asset('${welcomeImages[index]}'),
-                                  ),
-                            ))),
-                  ),
-                ],
-              )),
-        ],
-      ),
+      body: new WillPopScope(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              new Flexible(flex: 1, child: appBar),
+              new Flexible(
+                  flex: _currentIndex == 0 ? 6 : 8,
+                  child: new PageView(
+                    physics: NeverScrollableScrollPhysics(),
+                    controller: pageController,
+                    onPageChanged: (index) => _switchBar(index),
+                    children: <Widget>[
+                      new MovieSelectedPage(),
+                      new MovieHomePage(),
+                      new Scaffold(
+                        body: Center(
+                            child: Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.6,
+                                child: new TinderSwapCard(
+                                  orientation: AmassOrientation.BOTTOM,
+                                  totalNum: 6,
+                                  stackNum: 3,
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  maxHeight:
+                                      MediaQuery.of(context).size.width * 0.9,
+                                  minWidth:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  minHeight:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  cardBuilder: (context, index) => Card(
+                                        child: Image.asset(
+                                            '${welcomeImages[index]}'),
+                                      ),
+                                ))),
+                      ),
+                    ],
+                  )),
+            ],
+          ),
+          onWillPop: () async {
+            if (_lastBackTime == null ||
+                DateTime.now().difference(_lastBackTime).inSeconds < 1) {
+              _lastBackTime = DateTime.now();
+              Fluttertoast.showToast(msg: "再按一次退出");
+              Future.delayed(Duration(seconds: 2), () {
+                setState(() {
+                  _lastBackTime = null;
+                });
+              });
+              return false;
+            }
+            return true;
+          }),
       bottomNavigationBar: navigationBar,
     );
   }

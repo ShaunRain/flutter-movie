@@ -13,10 +13,13 @@ import 'package:flutter_movie/ui/poster.dart';
 import 'package:flutter_movie/ui/rating_info.dart';
 import 'package:flutter_movie/util/movie_api.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter_movie/util/event_bus.dart';
 
 class MovieSelectedPage extends StatefulWidget {
   @override
   _MovieSelectedPageState createState() => _MovieSelectedPageState();
+
+  MovieSelectedPage();
 }
 
 class _MovieSelectedPageState extends State<MovieSelectedPage>
@@ -45,6 +48,10 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
 
   final int pageSize = 10;
 
+  int currentSelected = 0;
+
+  List<List<Subject>> _cacheList = new List(3);
+
   @override
   void initState() {
     for (int i = 0; i < 250; i += 20) {
@@ -68,36 +75,90 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
       if (_selectedPageController.offset ==
               _selectedPageController.position.maxScrollExtent &&
           pageMounted) {
-        _getSelectedMovies();
+        _getSelectedMovies(false);
       }
     });
 
-    _getSelectedMovies();
+    _getSelectedMovies(true);
+
+    bus.on("selected_tab", (index) {
+      if (currentSelected != index) {
+        setState(() {
+          selectedMovies.clear();
+        });
+
+        currentSelected = index;
+        _selectedPageController.jumpToPage(0);
+
+        _getSelectedMovies(true);
+      }
+    });
+
     super.initState();
   }
 
-  void _getSelectedMovies() async {
-    if (isSelectedPageEnd) {
-      return;
+  Future<List<Subject>> requestResult() async {
+    Response response;
+
+    switch (currentSelected) {
+      case 0:
+        response = await new Dio().get(MovieApi.MOVIE_TOP250 +
+            '?apikey=${MovieApi.DOUBAN_API_KEY}&start=${startPoints[currentPoint++]}&count=${pageSize}');
+        break;
+      case 1:
+        response = await new Dio()
+            .get(MovieApi.MOVIE_NEW + '?apikey=${MovieApi.DOUBAN_API_KEY}');
+        break;
+      case 2:
+        response = await new Dio()
+            .get(MovieApi.MOVIE_USBOX + '?apikey=${MovieApi.DOUBAN_API_KEY}');
+        break;
     }
 
-    Response response = await new Dio().get(MovieApi.MOVIE_TOP250 +
-        '?apikey=${MovieApi.DOUBAN_API_KEY}&start=${startPoints[currentPoint++]}&count=${pageSize}');
-
-    List<Subject> results = response.data['subjects']
-        .map((json) => Subject.fromJson(json))
-        .toList()
-        .cast<Subject>();
+    List<Subject> results;
+    if (currentSelected == 2) {
+      results = response.data['subjects']
+          .map((json) => Subject.fromJson(json['subject']))
+          .toList()
+          .cast<Subject>();
+    } else {
+      results = response.data['subjects']
+          .map((json) => Subject.fromJson(json))
+          .toList()
+          .cast<Subject>();
+    }
 
     if (results.isEmpty) {
       setState(() {
         isSelectedPageEnd = true;
       });
+      return null;
+    }
+
+    if (currentSelected == 0) results.shuffle();
+
+    return results;
+  }
+
+  void _getSelectedMovies(loadInit) async {
+    if (isSelectedPageEnd) {
       return;
     }
-    results.shuffle();
 
-    selectedMovies.addAll(results);
+    List<Subject> results = loadInit &&
+            _cacheList[currentSelected] != null &&
+            _cacheList[currentSelected].length > 0
+        ? _cacheList[currentSelected]
+        : await requestResult();
+
+    if (loadInit) {
+      selectedMovies = results;
+      selectedCover = results[0].images.medium;
+      nextSelectedCover = results[0].images.medium;
+    } else {
+      selectedMovies.addAll(results);
+    }
+    _cacheList[currentSelected] = new List.from(selectedMovies);
 
     setState(() {
       loading = false;
@@ -106,9 +167,14 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
         selectedCover = selectedMovies[0].images.medium;
         _getShortComments(0);
       } else {
-        selectedCover =
-            selectedMovies[_selectedPageController.page.toInt()].images.medium;
-        _getShortComments(_selectedPageController.page.toInt());
+        try {
+          selectedCover = selectedMovies[_selectedPageController.page.toInt()]
+              .images
+              .medium;
+          _getShortComments(_selectedPageController.page.toInt());
+        } catch (e) {
+          print(e);
+        }
       }
     });
   }
@@ -355,7 +421,7 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
                       : Container()
                 ])),
         BackdropFilter(
-            filter: ui.ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            filter: ui.ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
             child: Container(color: Colors.white.withOpacity(0.2))),
         selectedMovies.isNotEmpty
             ? ScrollInAnimation(
@@ -409,7 +475,7 @@ class _MovieSelectedPageState extends State<MovieSelectedPage>
 }
 
 class ShortCommentView extends StatelessWidget {
-  ShortComment shortComment;
+  final ShortComment shortComment;
 
   ShortCommentView(this.shortComment);
 

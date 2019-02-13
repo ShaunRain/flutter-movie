@@ -73,7 +73,8 @@ class _MovieHomePageState extends State<MovieHomePage>
                     title: "正在热映", ratio: 0.9)
                 : SizedBox(),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              margin:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               height: 1.0,
               color: Colors.black12,
             ),
